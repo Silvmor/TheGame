@@ -13,7 +13,6 @@ import FakeServer
 pygame.init()
 pygame.joystick.init()
 joysticks = [pygame.joystick.Joystick(i)for i in range(pygame.joystick.get_count())]
-joystick = pygame.joystick.Joystick(0)
 screen_id       = 0
 screen          = screeninfo.get_monitors()[screen_id]
 width, height   = screen.width, screen.height
@@ -26,11 +25,6 @@ mouse_x,mouse_y=0,0
 direction   = {'w':'up','a':'left','s':'down','d':'right'}
 direction_2 = {pygame.K_UP:'up',pygame.K_LEFT:'left',pygame.K_DOWN:'down',pygame.K_RIGHT:'right'}
 move        = {"up":[0,-1],"down":[0,1],"left":[-1,0],"right":[1,0]}
-
-
-print(joysticks)
-
-
 
 
 class Character():
@@ -71,77 +65,55 @@ class Character():
         
         self.animation.rect.center=(self.animation.rect.center[0]+move[self.direction][0],self.animation.rect.center[1]+move[self.direction][1])
 
+class Level():
+    def __init__(self):
+        self.SG_0 = pygame.sprite.Group()
+        Ground = Still('assets/level/level_1.png')
+        Ocean = Still('assets/level/Ocean.png')
+        Ground.place(pos_x=1920/2,pos_y=1080/2,wrt='c')
+        self.SG_0.add(Ocean,Ground)
 
+def main():
+    def Update():
+        display_surface.fill(white)
+        display_surface.blit(grid,(0,0))
+        Captain.walk()
+        Mover_group.draw(display_surface)
 
-
-
-
-
-
-
-
-
-
-
-
-
-#mainloop
-Mover_group = pygame.sprite.Group()
-Spy=Character("assets/Spy")
-Captain=Character("assets/Captain")
-Captain.animation.rect.center=(640,10)
-
-
-Background_group = pygame.sprite.Group()
-Back = Still('assets/level/level_1.png')
-Ocean = Still('assets/level/Ocean.png')
-
-Back.place(pos_x=1920/2,pos_y=1080/2,wrt='c')
-#Back.place(pos_x=0,pos_y=-30)
-Background_group.add(Ocean,Back)
-
-Mover_group.add(Captain.animation)
-
-def main() :
-    
+    def Event_handler():
+        events=pygame.event.get()
+        if  events : 
+            for event in events :
+                #print(event)
+                if event.type == pygame.KEYDOWN:
+                    if event.unicode=='q' or event.key ==pygame.K_ESCAPE:
+                        Quit()
+                    elif event.unicode in direction:
+                        if not direction[event.unicode]==Captain.direction:
+                            Captain.direction=direction[event.unicode]
+                            Captain.walk(change=True)
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    print(event)
+                elif event.type == pygame.JOYBUTTONUP:
+                    print(event)
+                elif event.type == pygame.JOYHATMOTION:
+                    print(event)
+                elif event.type == pygame.QUIT:
+                    Quit()
+                        
+            del events
+            
+    Mover_group = pygame.sprite.Group()
+    Captain=Character("assets/Captain")
+    Captain.animation.rect.center=(640,10)
+    Mover_group.add(Captain.animation)
+    level = Level()
+    level.SG_0.draw(grid)
     while True:
         Update()
         Event_handler()
         pygame.display.update()
         clock.tick(60)        
-
-def Event_handler():
-    events=pygame.event.get()
-    if  events : 
-        for event in events :
-            #print(event)
-            if event.type == pygame.KEYDOWN :
-                if event.unicode=='q' or event.key ==pygame.K_ESCAPE :
-                    Quit()
-                elif event.unicode in direction :
-                    Captain.direction=direction[event.unicode]
-                    Captain.walk(change=True)
-                elif event.key == pygame.K_RETURN :
-                    pass
-            if event.type == pygame.JOYBUTTONDOWN :
-                print(event)
-            if event.type == pygame.JOYHATMOTION :
-                print(event)
-            elif event.type == pygame.MOUSEMOTION :
-                mouse_x,mouse_y==event.pos
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pass
-            elif event.type == pygame.QUIT :
-                Quit()
-                    
-        del events
-        
-def Update():
-    display_surface.fill(white)
-    display_surface.blit(grid,(0,0))
-    Spy.walk()
-    Captain.walk()
-    Mover_group.draw(display_surface)
 
 def Quit():
     pygame.quit()
@@ -159,6 +131,6 @@ def Draw_grid(surface):
         pygame.draw.line(surface, black, (0,size*i+y),(1920,size*i+y),1)
 grid =pygame.Surface((1920,1080),pygame.SRCALPHA)
 Draw_grid(grid)
-Background_group.draw(grid)
 
-main()
+if __name__ == '__main__':
+    main()

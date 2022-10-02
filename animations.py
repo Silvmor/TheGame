@@ -70,3 +70,4 @@ class Still(pygame.sprite.Sprite):
 	def resize(self,width,height) :
 		self.image = pygame.transform.smoothscale(self.image,(width,height))
 		self.rect = self.image.get_rect()
+		
