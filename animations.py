@@ -17,7 +17,7 @@ class Animation(pygame.sprite.Sprite):
 		self.rect.topleft = 0,0
 
 	def update(self,speed):
-		if self.animation == True:
+		if self.play_animation == True:
 			self.current_sprite += speed
 			if int(self.current_sprite) >= len(self.sprites):
 				self.current_sprite = 0
