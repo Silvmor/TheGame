@@ -7,7 +7,7 @@ class Animation(pygame.sprite.Sprite):
 		self.original = []
 		num=0
 		for img in os.listdir(path):
-			self.original.append(pygame.image.load(path+"/"+str(num)+".png"))
+			self.original.append(pygame.image.load(path+"/"+str(num)+".png").convert_alpha())
 			num = num+1
 		self.sprites =self.original.copy()
 		self.total_sprites =len(self.original)
@@ -49,7 +49,7 @@ class Animation(pygame.sprite.Sprite):
 class Still(pygame.sprite.Sprite):
 	def __init__(self,path):
 		super().__init__()
-		self.image = pygame.image.load(path)
+		self.image = pygame.image.load(path).convert_alpha()
 		self.rect = self.image.get_rect()
 
 	def place(self,pos_x,pos_y,width=None,height=None,fact=None,wrt="TL") :
@@ -70,4 +70,14 @@ class Still(pygame.sprite.Sprite):
 	def resize(self,width,height) :
 		self.image = pygame.transform.smoothscale(self.image,(width,height))
 		self.rect = self.image.get_rect()
+
+	def zoom(self,fact=1):
+		(x,y)=self.rect.center
+		width,height=int(self.rect.width*fact),int(self.rect.height*fact)
+		self.image = pygame.transform.smoothscale(self.image,(width,height))
+		self.rect=self.image.get_rect()
+		self.rect.center=(x,y)
+
+	def draw(self,surface):
+		surface.blit(self.image,self.rect)
 		

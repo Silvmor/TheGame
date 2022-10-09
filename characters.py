@@ -2,26 +2,25 @@ import pygame
 from animations import Animation
 class Character():
     
-    def __init__(self,path):
-        self.animation = Animation(path)
+    def __init__(self,name):
+        self.name=name
+        self.animation = Animation('assets/'+name)
         self.animation.zoom(1.5)
-        self.animation.current_sprite = 0
-        self.cycle_begin = 0
-        self.cycle_end = 0
+        self.animation.play_animation=True
         self.SG = pygame.sprite.Group()
         self.SG.add(self.animation)
         self.animation.rect.center = (690,470)
-        self.animation.current_sprite = 27
-        self.cycle_begin = 27
-        self.cycle_end = 35
-        self.direction = "right"
+        self.direction = 'right'
         self.state = 'idle'
         self.wait = 0
-        self.animation.play_animation=True
-        self.animation.update(0.2)
+        self.idle(change=True)
         self.position=[0,0]
+        self.HP = 3
+        self.reveals=3
+        eval('self.'+name+'()')
 
     def walk(self,change=False,speed=0.3,displace=1):
+        #do something with move here self.direction=[0,0]
         move = {"up":[0,-1],"down":[0,1],"left":[-1,0],"right":[1,0]}
         self.animation.current_sprite += speed
         if int(self.animation.current_sprite) > self.cycle_end:
@@ -49,3 +48,7 @@ class Character():
                 self.cycle_end = 35
         self.animation.update(0.2)
 
+    def Captain(self):
+        self.HP=4
+    def Spy(self):
+        self.reveals=4

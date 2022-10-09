@@ -13,3 +13,6 @@ Quicksand       = pygame.font.Font("assets/Fonts/Quicksand.otf",50)
 Chomsky         = pygame.font.Font("assets/Fonts/Chomsky.otf",32)
 A1942report     = pygame.font.Font("assets/Fonts/A1942report.ttf",50)
 DirtyFox        = pygame.font.Font("assets/Fonts/DirtyFox.ttf",50)
+Courier         = pygame.font.Font("assets/Fonts/Courier.ttf",20)
+Courier_big     = pygame.font.Font("assets/Fonts/Courier.ttf",20)
+
