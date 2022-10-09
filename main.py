@@ -72,6 +72,11 @@ def main():
         game.game_update(display_surface)
         Event_handler()
         fps.show(display_surface)
+        
+        if game.state[0]=='object_place':
+            display_surface.blit(start_word,start_word.get_rect(center=game.start_rect.center))
+        elif game.state[0]=='run_phase':
+            display_surface.blit(run_word,run_word.get_rect(center=game.start_rect.center))
         pygame.display.update()
 
         #display_surface.blit(game.console,(0,0))
@@ -100,7 +105,11 @@ def Draw_grid(surface):
     for i in range(18):
         pygame.draw.line(surface, black, (0,size*i+y),(1920,size*i+y),1)
 grid =pygame.Surface((1920,1080),pygame.SRCALPHA)
-Draw_grid(grid)
+#Draw_grid(grid)
+
+
+start_word=Goldie.render('Start',True,(100,200,10))
+run_word=Goldie.render('run',True,(200,10,10))
 #experimental code end.
 
 if __name__ == '__main__':

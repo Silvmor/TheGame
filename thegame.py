@@ -40,6 +40,7 @@ class TheGame():
             self.weapon_assign()
             self.goal_set()
             self.start()
+            self.legend()
             self.level.surface.blit(self.overlay_fixed,(0,0))
         elif self.state[0]=='character_choose':
                 self.character_choose()
@@ -57,13 +58,6 @@ class TheGame():
         
         if self.state[0] in ['object_place','run_phase']:
             surface.blit(self.level.surface,(0,0))
-            surface.blit(Courier.render('Wins: '+str(self.score),True,black),(30,30))
-            for image in self.stills:
-                image.draw(surface)
-            if self.player:
-                self.player.SG.draw(surface)
-                surface.blit(Courier.render('Hp : '+str(self.player.HP),True,black),(30,60))
-                surface.blit(Courier.render('Reveals : '+str(self.player.reveals),True,black),(30,90))
             if self.state[0]=='object_place':
                 cell=None
                 temp=[self.mouse_check(self.matrix) or self.mouse_check(self.character_pos) or self.mouse_check(self.weapon_pos)]
@@ -84,6 +78,14 @@ class TheGame():
                         if self.player.wait==0:
                             self.use_effect()
                             self.set_wait()
+
+            surface.blit(Courier.render('Wins    : '+str(self.score),True,black),(30,960))
+            for image in self.stills:
+                image.draw(surface)
+            if self.player:
+                self.player.SG.draw(surface)
+                surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
+                surface.blit(Courier.render('Reveals : '+str(self.player.reveals),True,black),(30,1020))
 
     #initial phase
     def menu(self):
@@ -176,15 +178,15 @@ class TheGame():
             else:
                 temp=self.mouse_check(self.matrix)
                 if temp:
-                    
-                    if self.state[1] in ['free','matrix']:
-                        self.state=['object_place','matrix',[temp[1],temp[2]]]
-                    else:
-                        if self.state[1]=='weapon_pos':
-                            self.weapon_place(self.state[2][0],self.state[2][1],temp[1],temp[2])
-                        elif self.state[1]=='character_pos':
-                            self.character_place(self.state[2][0],self.state[2][1],temp[1],temp[2])
-                        self.state=['object_place','free']
+                    if temp[1]<self.level.w and temp[2]<self.level.h:
+                        if self.state[1] in ['free','matrix']:
+                            self.state=['object_place','matrix',[temp[1],temp[2]]]
+                        else:
+                            if self.state[1]=='weapon_pos':
+                                self.weapon_place(self.state[2][0],self.state[2][1],temp[1],temp[2])
+                            elif self.state[1]=='character_pos':
+                                self.character_place(self.state[2][0],self.state[2][1],temp[1],temp[2])
+                            self.state=['object_place','free']
                         
                 else:
                     temp=self.mouse_check(self.weapon_pos)
@@ -318,7 +320,11 @@ class TheGame():
         eval(self.effect)
         self.effect=''
 
-
+    def legend(self):
+        character_word=Goldie.render('Character',True,black)
+        weapon_word=Goldie.render('Weapon',True,black)
+        self.overlay_fixed.blit(character_word,(60,60))
+        self.overlay_fixed.blit(weapon_word,(1590,60))
     def start(self):
         self.start_rect=pygame.Rect(840,960,240,90)
         pygame.draw.rect(self.overlay_fixed,(50,50,50,100),self.start_rect,border_radius=20)
