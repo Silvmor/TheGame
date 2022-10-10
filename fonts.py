@@ -2,6 +2,7 @@ import pygame
 pygame.init()
 
 Goldie          = pygame.font.Font("assets/Fonts/Goldie.ttf",60)
+Goldie_small    = pygame.font.Font("assets/Fonts/Goldie.ttf",30)
 Demon_Blade     = pygame.font.Font("assets/Fonts/Demon_Blade.otf",90)
 Demon_Blade_big = pygame.font.Font("assets/Fonts/Demon_Blade.otf",120)
 NixieOne_small  = pygame.font.Font("assets/Fonts/NixieOne.otf",20)
@@ -14,5 +15,6 @@ Chomsky         = pygame.font.Font("assets/Fonts/Chomsky.otf",32)
 A1942report     = pygame.font.Font("assets/Fonts/A1942report.ttf",50)
 DirtyFox        = pygame.font.Font("assets/Fonts/DirtyFox.ttf",50)
 Courier         = pygame.font.Font("assets/Fonts/Courier.ttf",20)
-Courier_big     = pygame.font.Font("assets/Fonts/Courier.ttf",20)
+Courier_small   = pygame.font.Font("assets/Fonts/Courier.ttf",15)
+Courier_big     = pygame.font.Font("assets/Fonts/Courier.ttf",40)
 

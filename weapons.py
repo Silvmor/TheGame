@@ -4,6 +4,7 @@ class Weapon():
 	def __init__(self,ID):
 		self.id=ID
 		weapon_call=eval('self.'+ID)
+		self.activated=1
 		weapon_call()
 	def crystal_blue(self):
 		self.image=Still('assets/weapon/crystal_blue.png')

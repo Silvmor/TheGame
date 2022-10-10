@@ -22,7 +22,7 @@ class Level():
         self.surface.blit(self.level_grounds[0],(0,0))
         self.surface.blit(self.current_ground,self.current_rect)
         level_call=eval('self.level_'+str(self.current_level))
-        level_call()
+        return level_call()
 
     def level_1(self):
         self.x,self.y,self.w,self.h=11,6,10,5
@@ -43,3 +43,5 @@ class Level():
     def level_5(self):
         self.x,self.y,self.w,self.h=7,4,18,9
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
+    def level_6(self):
+        return 'credits'

@@ -20,6 +20,7 @@ def Server():
         running = True
         sock.setblocking(False)
         receiver_thread=threading.Thread(target=receiver,args=(sock,ID))
+        receiver_thread.start()
         while running :
             message = input("Send : ")
             if message=='Exit':

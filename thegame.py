@@ -49,7 +49,9 @@ class TheGame():
                 self.state_change=1
         elif self.state[0]=='win':
             self.state=['object_place','free']
-            self.level.next()
+            if self.level.next()=='credits':
+                self.state=['credits']
+                print('Thank You For Playing.')
             self.stills.clear()
             self.player=None
             self.state_change=1
@@ -290,7 +292,8 @@ class TheGame():
                     self.effect=f"self.move({new_x},{new_y})"
                     return 1
                 elif occupant[0][0]=='weapon':
-                    self.effect=f"self.move({new_x},{new_y}),{occupant[0][1].effect}"
+                    if occupant[0][1].activated:
+                        self.effect=f"self.move({new_x},{new_y}),{occupant[0][1].effect}"
                     return 1
                 else:
                    print("In front : ",occupant)
@@ -299,26 +302,41 @@ class TheGame():
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P1'])
         self.level.occupants[x][y].append(['block','P1'])
         self.player.position=[x,y]
-
+    def undo_move(self,x,y):
+        self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P1'])
+        self.level.occupants[x][y].append(['block','P1'])
+        self.player.position=[x,y]
     def take_damage(self,amount):
         self.player.HP-=amount
-        if self.player.HP<=0:
-            self.player.HP=0
+        #could be in negative
+    def undo_take_damage(self,amount):
+        self.player.HP+=amount
     def remove(self):
-        temp=self.level.occupants[self.player.position[0]][self.player.position[1]].pop(0)
+        temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
+        temp[1].activated=0
         self.stills.remove(temp[1].image)
+    def undo_remove(self):
+        temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
+        temp.activated=1
+        self.stills.append(temp[1].image)
     def took(self):
-
         self.state[1]='took'
+    def undo_took(self):
+        self.state[1]='free'
     def win(self):
         if self.state[1]=='took':
+            #here first resolve all conflicts
             self.score+=1
             self.state=['win']
             self.state_change=1
 
     def use_effect(self):
+        #sender()
         eval(self.effect)
         self.effect=''
+
+    def rollback(self,effect):
+        eval(effect)
 
     def legend(self):
         character_word=Goldie.render('Character',True,black)
