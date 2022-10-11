@@ -10,6 +10,7 @@ class Client():
     def connect(self,IP=None):
         if not IP:
             IP=socket.gethostname()
+        #self.sock.connect(('10.194.38.98',2300))
         self.sock.connect((IP,2300))
         self.sock.setblocking(False)
         self.receiver()

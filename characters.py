@@ -3,7 +3,9 @@ from animations import Animation
 class Character():
     
     def __init__(self,name):
+        represent={'Captain':'P1','Spy':'P2'}
         self.name=name
+        self.id=represent[name]
         self.animation = Animation('assets/'+name)
         self.animation.zoom(1.5)
         self.animation.play_animation=True

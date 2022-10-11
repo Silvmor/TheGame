@@ -8,6 +8,7 @@ from animations import Still
 from animations import Animation
 from clients import Client
 import threading
+import sys
 
 class TheGame():
     def __init__(self):
@@ -42,6 +43,7 @@ class TheGame():
             self.start_frame()
         elif self.state[0]=='send_map':
             self.client.sender('MS,'+str(self.map))
+            print(self.level.occupants)
         elif self.state[0]=='receive_map':
             self.set_opponent()
         elif self.state[0]=='ready':
@@ -253,14 +255,15 @@ class TheGame():
 
     #4.placement of objects
     def character_place(self,from_x,from_y,to_x,to_y):
+        representation={'Captain':'P1','Spy':'P2'}
         if self.level.occupants[to_y][to_x]==[]:
             if self.player:
                 self.level.occupants[self.player.position[0]][self.player.position[1]]=[]
-                self.map[self.player.position[0]][self.player.position[1]]=[]
+                self.map[self.player.position[1]][self.player.position[0]]=[]
             self.player=self.characters[from_x]
             self.player.position=[to_y,to_x]
-            self.level.occupants[to_y][to_x]=[['block','P1']]
-            self.map[to_x][to_y]=['P']
+            self.level.occupants[to_y][to_x]=[['block','P']]
+            self.map[to_x][to_y]=[representation[self.player.name]]
             self.player.animation.rect.center = ((self.level.x+to_y)*60+30,(self.level.y+to_x)*60-10)
     
     def weapon_place(self,from_x,from_y,to_x,to_y):
@@ -327,8 +330,8 @@ class TheGame():
                    print("In front : ",occupant)
 
     def move(self,x,y):
-        self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P1'])
-        self.level.occupants[x][y].append(['block','P1'])
+        self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P'])
+        self.level.occupants[x][y].append(['block','P'])
         self.player.position=[x,y]
     def undo_move(self,x,y):
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P1'])
@@ -377,7 +380,25 @@ class TheGame():
         pygame.draw.rect(self.overlay_fixed,(0,0,0,100),self.start_rect,width=5,border_radius=20)
 
     def set_opponent(self):
+        represent={'M':'mine','B':'bomb','P1':'Captain','P2':'Spy'}
         temp_matrix=self.client.authority_messages.pop(0)
+        ast.literal_eval(temp_matrix)
+        for x,row in enumerate(temp_matrix):
+                for y,cell in enumerate(row):
+                    if cell:
+                        if cell[0][0]=='P':
+                            self.opponent=Character(represent[cell])
+                            self.opponent.position=[y,x]
+                            self.level.occupants[y][x]=[['block','P']]
+                            self.map[x][y]=['X'+representation[self.opponent.name][1:]]
+                            self.opponent.animation.rect.center = ((self.level.x+y)*60+30,(self.level.y+x)*60-10)
+                        elif cell[0] in ['M','B']:
+                            temp=Weapon(represent[cell[0]])
+                            temp.image.rect.center=self.matrix[x][y].center
+                            self.level.occupants[y][x]=[['weapon',temp]]
+                            self.map[x][y]=[temp.id]
+                            self.stills.append(temp.image)
+
         self.state[0]='ready'
     def start_frame(self):
         self.client.authority_messages.pop(0)
