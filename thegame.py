@@ -7,6 +7,7 @@ from fonts      import *
 from animations import Still
 from animations import Animation
 from clients import Client
+import ast
 import threading
 import sys
 
@@ -43,7 +44,6 @@ class TheGame():
             self.start_frame()
         elif self.state[0]=='send_map':
             self.client.sender('MS,'+str(self.map))
-            print(self.level.occupants)
         elif self.state[0]=='receive_map':
             self.set_opponent()
         elif self.state[0]=='ready':
@@ -107,9 +107,11 @@ class TheGame():
         elif self.state[0]=='send_map':
             if self.client.authority_advance:
                 self.state[0]='receive_map'
+                self.client.authority_advance=0
         elif self.state[0]=='ready':
             if self.client.authority_advance:
                 self.state[0]=='run_phase'
+                self.client.authority_advance=0
 
     #initial phase
     def menu(self):
@@ -385,20 +387,19 @@ class TheGame():
         ast.literal_eval(temp_matrix)
         for x,row in enumerate(temp_matrix):
                 for y,cell in enumerate(row):
-                    if cell:
-                        if cell[0][0]=='P':
+                    if y<=self.level.w/2:
+                        continue
+                    elif cell:
+                        if cell[0] in ['X1','X2']:
                             self.opponent=Character(represent[cell])
                             self.opponent.position=[y,x]
-                            self.level.occupants[y][x]=[['block','P']]
-                            self.map[x][y]=['X'+representation[self.opponent.name][1:]]
+                            self.level.occupants[y][x]=[['block','X']]
                             self.opponent.animation.rect.center = ((self.level.x+y)*60+30,(self.level.y+x)*60-10)
                         elif cell[0] in ['M','B']:
                             temp=Weapon(represent[cell[0]])
                             temp.image.rect.center=self.matrix[x][y].center
                             self.level.occupants[y][x]=[['weapon',temp]]
-                            self.map[x][y]=[temp.id]
                             self.stills.append(temp.image)
-
         self.state[0]='ready'
     def start_frame(self):
         self.client.authority_messages.pop(0)

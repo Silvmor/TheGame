@@ -42,6 +42,7 @@ def sender(msg,sock,ID):
         if sent == 0:
             raise RuntimeError("socket connection broken")
         totalsent = totalsent + sent
+    RML(msg)
 
 def receiver(sock,ID):
     chunks=[]
@@ -69,14 +70,18 @@ def authority(message,sock,ID):
             set_opponents()
             State_ADVANCE=[1,1]
     elif split.pop(0)=='OK':
-        State_ADVANCE[ID]=1
+        State_ADVANCE[ID]+=1
+    elif split.pop(0)=='RR':
+        '''here you receive effects in split'''
+        pass
 
 def set_player(ID):
-    for y,row in enumerate(player[ID]['matrix']):
+    for y,row in enumerate(players[ID]['matrix']):
         for x,cell in enumerate(row):
-            if cell[0][0]=='P':
-                players[ID]['player']=[x,y]
-                players[not ID]['opponent']=[x,y]
+            if cell!=[]:
+                if cell[0] in ['P1','P2']:
+                    players[ID]['player']=[x,y]
+                    players[not ID]['opponent']=[x,y]
 
 def set_opponents():
     global w,h
@@ -84,35 +89,39 @@ def set_opponents():
         for x,cell in enumerate(row):
             if cell!=[]:
                 if cell[0] in ['P1','P2']:
-                    players[0]['matrix'][y][w-x-1]=['X'+cell[0][1]]
+                    players[0]['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
                 else:
-                    players[0]['matrix'][y][w-x-1]=cell
+                    players[0]['matrix'][h-y-1][w-x-1]=cell
 
     for y,row in enumerate(players[0]['matrix']):
         for x,cell in enumerate(row):
             if cell!=[]:
                 if cell[0] in ['P1','P2']:
-                    players[1]['matrix'][y][w-x-1]=['X'+cell[0][1]]
+                    players[1]['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
                 elif cell[0] in ['X1','X2']:
-                    players[1]['matrix'][y][w-x-1]=['P'+cell[0][1]]
+                    players[1]['matrix'][h-y-1][w-x-1]=['P'+cell[0][1]]
 
                 else:
-                    players[1]['matrix'][y][w-x-1]=cell
+                    players[1]['matrix'][h-y-1][w-x-1]=cell
 
-    players[0]['matrix'][int(h/2)][0]=CB
-    players[0]['matrix'][int(h/2)-1][0]=Gp
-    players[0]['matrix'][int(h/2)][w-1]=CR
-    players[0]['matrix'][int(h/2)+1][w-1]=Gx
-    players[1]['matrix'][int(h/2)][0]=CB
-    players[1]['matrix'][int(h/2)-1][0]=Gp
-    players[1]['matrix'][int(h/2)][w-1]=CR
-    players[1]['matrix'][int(h/2)+1][w-1]=Gx
+    players[0]['matrix'][int(h/2)][0]='CB'
+    players[0]['matrix'][int(h/2)-1][0]='Gp'
+    players[0]['matrix'][int(h/2)][w-1]='CR'
+    players[0]['matrix'][int(h/2)+1][w-1]='Gx'
+    players[1]['matrix'][int(h/2)][0]='CB'
+    players[1]['matrix'][int(h/2)-1][0]='Gp'
+    players[1]['matrix'][int(h/2)][w-1]='CR'
+    players[1]['matrix'][int(h/2)+1][w-1]='Gx'
 
 def update(sock,ID):
-    #if State_ADVANCE==[1,1]
-    #if State_ADVANCE[ID]
-    #if State_ADVANCE==[2,1] || [1,2]
-    pass
+    if State_ADVANCE==[1,1] or (State_ADVANCE[not ID]==2 and State_ADVANCE[ID]==1):
+        '''send matrix'''
+        msg=str(players[ID]['matrix'])
+        sender(msg,sock,ID)
+        State_ADVANCE[ID]+=1
+    elif State_ADVANCE==[3,3] or (State_ADVANCE[not ID]==4 and State_ADVANCE[ID]==3):
+        '''send KO = begin run_phase'''
+        sender('KO',sock,ID)
 def forward(message,sock,ID):
     pass
 def rollback(message,sock,ID):
@@ -236,8 +245,6 @@ surface.blit(Goldie_small.render("Player_1",True,black),(50,10))
 surface.blit(Goldie_small.render("Player_2",True,black),(50,510))
 log_surface= pygame.Surface((920,1080))
 log_surface.fill(white)
-server_thread = threading.Thread(target=Server)
-server_thread.start()
 '''END'''
 RML('Server Logs:\n'+
     socket.gethostname()+
