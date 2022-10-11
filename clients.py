@@ -7,14 +7,14 @@ class Client():
         self.authority_advance=0
         #self.sock.bind((socket.gethostname(),2301))#optional
 
-    def connect(IP=None):
+    def connect(self,IP=None):
         if not IP:
             IP=socket.gethostname()
         self.sock.connect((IP,2300))
         self.sock.setblocking(False)
         self.receiver()
 
-    def connection_close(self, self.sock,ID):
+    def connection_close(self,ID):
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
 

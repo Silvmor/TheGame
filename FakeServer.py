@@ -44,6 +44,11 @@ def Server():
             if chunk == '':
                 raise RuntimeError("socket connection broken")
             chunks.append(chunk)
+
+    def authority(ID,message):
+        RML(message)
+
+
     global x,y
     import socket
     port=2300
@@ -53,16 +58,19 @@ def Server():
     RML('Server Logs:\n'+socket.gethostname()+" is now running as "+socket.gethostbyname(socket.gethostname())+" on port "+str(port))
     index=0
     threads=[]
-    while index<2:
+    while index<100:
         connectionSocket, address = serverSocket.accept()
         RML((f"Client_{index} {address} is connected."))
+        connections.append(connectionSocket)
         threads.append(threading.Thread(target=connection,args=(connectionSocket,index)))
         threads[index].start()
         index+=1
 
+connections=[]
 #initialize
 pygame.init()
 screen          = screeninfo.get_monitors()[0]
+print(screen)
 clock           = pygame.time.Clock()
 display_surface = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 pygame.display.set_caption('Server')
@@ -90,6 +98,8 @@ def Event_handler():
                     user_text=user_text[:-1]
                 elif event.unicode=='~':
                     exec('log_surface.fill(white);global y;y=50;RML("Server Logs :")')
+                elif event.unicode=='`':
+                    sender('OK', connections[0])
                 else :
                     user_text += event.unicode
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -142,8 +152,7 @@ def RML(text,fsize=25,font=NixieOne_small,color=(40,0,40,255)):
         log_surface.blit(font.render(l,True, color), (x,y))
     y +=fsize
 
-def authority(ID,message):
-    RML(message)
+
 
 w,h=10,5
 server_1_pos=[[ [] for i in range(w)] for i in range(h)]

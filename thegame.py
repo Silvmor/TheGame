@@ -6,6 +6,8 @@ from colors     import *
 from fonts      import *
 from animations import Still
 from animations import Animation
+from clients import Client
+import threading
 
 class TheGame():
     def __init__(self):
@@ -30,16 +32,20 @@ class TheGame():
         #self.con_font=pygame.font.Font("assets/Fonts/NixieOne.otf",30)
         self.effect=''
         self.score=0
+        self.current_frame=0
+        self.last_update=0
+
+        self.client =Client()
 
     def state_manager(self):
         if self.state[0]=='run_phase':
             self.start_frame()
         elif self.state[0]=='send_map':
-            self.client.send(self.map)
+            self.client.sender(str(self.map))
         elif self.state[0]=='receive_map':
             self.set_opponent()
         elif self.state[0]=='ready':
-            self.client.send('OK')
+            self.client.sender('OK')
         elif self.state[0]=='object_place':
             self.set_matrix()
             self.set_inventory()
@@ -80,6 +86,7 @@ class TheGame():
                         self.draw_select(surface,(100,0,0,255),cell,0)
 
             elif self.state[0]=='run_phase':
+                self.current_frame+=1
                 if self.player.state=='walk':
                     if self.player.wait>0:
                         self.player.walk()
@@ -125,6 +132,7 @@ class TheGame():
                 temp.append(pygame.Rect((x+j)*size,(y+i)*size,size,size))
                 pygame.draw.rect(self.overlay_fixed,(255,255,255,20),((x+j)*size,(y+i)*size,size-3,size-3),border_radius=20)
             self.matrix.append(temp)
+        self.map=[[ [] for i in range(w)] for i in range(h)]
 
     def set_inventory(self):
         self.character_pos.clear()
@@ -248,9 +256,11 @@ class TheGame():
         if self.level.occupants[to_y][to_x]==[]:
             if self.player:
                 self.level.occupants[self.player.position[0]][self.player.position[1]]=[]
+                self.map[self.player.position[0]][self.player.position[1]]=[]
             self.player=self.characters[from_x]
             self.player.position=[to_y,to_x]
             self.level.occupants[to_y][to_x]=[['block','P1']]
+            self.map.occupants[to_x][to_y]=['P']
             self.player.animation.rect.center = ((self.level.x+to_y)*60+30,(self.level.y+to_x)*60-10)
     
     def weapon_place(self,from_x,from_y,to_x,to_y):
@@ -258,6 +268,7 @@ class TheGame():
             temp=Weapon(self.weapons[from_x*3+from_y][0])
             temp.image.rect.center=self.matrix[to_x][to_y].center
             self.level.occupants[to_y][to_x]=[['weapon',temp]]
+            self.map[to_x][to_y]=[temp.id]
             self.stills.append(temp.image)
 
 
@@ -283,6 +294,7 @@ class TheGame():
             while self.buffer:
                 entry=self.buffer[-1]
                 if self.validate_move(entry):
+                    self.client.sender('RR,'+str(self.current_frame)+','+self.effect)
                     if self.player.direction!=entry:
                         self.player.direction=entry
                         self.player.idle(change=True)

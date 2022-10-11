@@ -2,7 +2,8 @@ from animations import Still
 from animations import Animation
 class Weapon():
 	def __init__(self,ID):
-		self.id=ID
+		represent = {'crystal_blue':'CB','crystal_red':'CR','mine':'M','bomb':'B','goal':'Gp','no_goal':'Gx'}
+		self.id=represent[ID]
 		weapon_call=eval('self.'+ID)
 		self.activated=1
 		weapon_call()

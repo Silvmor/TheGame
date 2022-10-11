@@ -4,6 +4,7 @@ import sys
 import math
 import os
 from thegame    import TheGame
+import threading
 
 
 #initializations
@@ -61,7 +62,9 @@ def main():
     #code start : below this line
 
     game  = TheGame()
-    game.menu()
+    client_thread=threading.Thread(target=game.client.connect)
+    client_thread.start()
+    #game.menu()
     game.state_manager()
 
     
