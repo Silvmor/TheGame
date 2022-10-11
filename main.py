@@ -61,7 +61,9 @@ def main():
     #code start : below this line
 
     game  = TheGame()
+    game.menu()
     game.state_manager()
+
     
     #code end : above this line
     while True:
@@ -75,6 +77,12 @@ def main():
         
         if game.state[0]=='object_place':
             display_surface.blit(start_word,start_word.get_rect(center=game.start_rect.center))
+        elif game.state[0]=='send_map':
+            display_surface.blit(wait_word_1,run_word.get_rect(center=game.start_rect.center))
+        elif game.state[0]=='receive_map':
+            display_surface.blit(wait_word_2,run_word.get_rect(center=game.start_rect.center))
+        elif game.state[0]=='ready':
+            display_surface.blit(wait_word_3,run_word.get_rect(center=game.start_rect.center))
         elif game.state[0]=='run_phase':
             display_surface.blit(run_word,run_word.get_rect(center=game.start_rect.center))
         pygame.display.update()
@@ -108,8 +116,11 @@ grid =pygame.Surface((1920,1080),pygame.SRCALPHA)
 #Draw_grid(grid)
 
 
-start_word=Goldie.render('Start',True,(100,200,10))
+start_word=Goldie.render('Send',True,(100,200,10))
 run_word=Goldie.render('run',True,(200,10,10))
+wait_word_1=Goldie.render('waiting.',True,(200,10,10))
+wait_word_2=Goldie.render('waiting..',True,(200,10,10))
+wait_word_3=Goldie.render('waiting...',True,(200,10,10))
 #experimental code end.
 
 if __name__ == '__main__':

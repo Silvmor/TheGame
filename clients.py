@@ -3,8 +3,14 @@ import socket
 class Client():
     def __init__(self):
         self.sock = socket.socket()
-        #clientSocket.bind((socket.gethostname(),2301))#optional
-        self.sock.connect((socket.gethostname(),2300))
+        self.authority_messages=[]
+        self.authority_advance=0
+        #self.sock.bind((socket.gethostname(),2301))#optional
+
+    def connect(IP=None):
+        if not IP:
+            IP=socket.gethostname()
+        self.sock.connect((IP,2300))
         self.sock.setblocking(False)
         self.receiver()
 
@@ -36,5 +42,6 @@ class Client():
             chunks.append(chunk)
 
     def authority(self,result):
-        pass
+        self.authority_messages.append(result)
+        self.authority_advance=1
 

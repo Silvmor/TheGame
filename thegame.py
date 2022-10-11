@@ -24,6 +24,7 @@ class TheGame():
         self.overlay = pygame.Surface((1920,1080),pygame.SRCALPHA)
         self.overlay_fixed = pygame.Surface((1920,1080),pygame.SRCALPHA)
         self.stills=[]
+        self.map=['abstract matrix']
         
         #self.console = pygame.Surface((1920,1080),pygame.SRCALPHA)
         #self.con_font=pygame.font.Font("assets/Fonts/NixieOne.otf",30)
@@ -32,7 +33,13 @@ class TheGame():
 
     def state_manager(self):
         if self.state[0]=='run_phase':
-            pass
+            self.start_frame()
+        elif self.state[0]=='send_map':
+            self.client.send(self.map)
+        elif self.state[0]=='receive_map':
+            self.set_opponent()
+        elif self.state[0]=='ready':
+            self.client.send('OK')
         elif self.state[0]=='object_place':
             self.set_matrix()
             self.set_inventory()
@@ -88,10 +95,19 @@ class TheGame():
                 self.player.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
                 surface.blit(Courier.render('Reveals : '+str(self.player.reveals),True,black),(30,1020))
+        elif self.state[0]=='send_map':
+            if self.client.authority_advance:
+                self.state[0]='receive_map'
+        elif self.state[0]=='ready':
+            if self.client.authority_advance:
+                self.state[0]=='run_phase'
 
     #initial phase
     def menu(self):
-        pass
+        self.client =Client()
+        IP=0
+        client_thread=threading.Thread(target=self.client.connect(),args=(IP,))
+        client_thread.start()
 
     def character_choose(self):
         #after finished
@@ -175,7 +191,7 @@ class TheGame():
         if self.state[0]=='object_place':
             if self.start_rect.collidepoint(pygame.mouse.get_pos()):
                 if self.player:
-                    self.state=["run_phase",'free']
+                    self.state=["send_map",'free']
                     self.state_change=1
             else:
                 temp=self.mouse_check(self.matrix)
@@ -331,7 +347,7 @@ class TheGame():
             self.state_change=1
 
     def use_effect(self):
-        #sender()
+        self.client.sender('RR,'+self.effect)
         eval(self.effect)
         self.effect=''
 
@@ -348,5 +364,9 @@ class TheGame():
         pygame.draw.rect(self.overlay_fixed,(50,50,50,100),self.start_rect,border_radius=20)
         pygame.draw.rect(self.overlay_fixed,(0,0,0,100),self.start_rect,width=5,border_radius=20)
 
-
+    def set_opponent(self):
+        temp_matrix=self.client.authority_messages.pop(0)
+        self.state[0]='ready'
+    def start_frame(self):
+        self.client.authority_messages.pop(0)
 
