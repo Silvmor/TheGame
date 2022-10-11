@@ -93,7 +93,7 @@ def Event_handler():
                 else :
                     user_text += event.unicode
             elif event.type == pygame.MOUSEBUTTONUP:
-                controls() 
+                pass 
             elif event.type == pygame.QUIT:
                 Quit()             
         del events
