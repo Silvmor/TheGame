@@ -41,7 +41,7 @@ class TheGame():
         if self.state[0]=='run_phase':
             self.start_frame()
         elif self.state[0]=='send_map':
-            self.client.sender(str(self.map))
+            self.client.sender('MS,'+str(self.map))
         elif self.state[0]=='receive_map':
             self.set_opponent()
         elif self.state[0]=='ready':
@@ -260,7 +260,7 @@ class TheGame():
             self.player=self.characters[from_x]
             self.player.position=[to_y,to_x]
             self.level.occupants[to_y][to_x]=[['block','P1']]
-            self.map.occupants[to_x][to_y]=['P']
+            self.map[to_x][to_y]=['P']
             self.player.animation.rect.center = ((self.level.x+to_y)*60+30,(self.level.y+to_x)*60-10)
     
     def weapon_place(self,from_x,from_y,to_x,to_y):

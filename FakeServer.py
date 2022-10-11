@@ -5,6 +5,7 @@ from colors     import *
 from fps import FPS
 import sys
 import threading
+import ast
 
 
 def Server():
@@ -47,6 +48,9 @@ def Server():
 
     def authority(ID,message):
         RML(message)
+        split = message.split(',')
+        if split.pop(0)=='MS':
+            players[ID]['matrix']= ast.literal_eval(message[3:])
 
 
     global x,y
@@ -79,6 +83,14 @@ pygame.display.set_caption('Server')
 inputs          = {'w':'up','a':'left','s':'down','d':'right'}
 directions      = {pygame.K_UP:'up',pygame.K_LEFT:'left',pygame.K_DOWN:'down',pygame.K_RIGHT:'right'}
 move            = {'up':[-1,0],'down':[1,0],'left':[0,-1],'right':[0,1]}
+
+def sender(msg,sock):
+            totalsent = 0
+            while totalsent < len(msg):
+                sent = sock.send(msg[totalsent:].encode())
+                if sent == 0:
+                    raise RuntimeError("socket connection broken")
+                totalsent = totalsent + sent
 
 def Event_handler():
     global user_text
