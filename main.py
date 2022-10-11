@@ -77,22 +77,17 @@ def main():
         game.game_update(display_surface)
         Event_handler()
         fps.show(display_surface)
-        '''
-        display_surface.blit(Sofia.render('State : '+str(game.state),True,red),(200,200))
-        display_surface.blit(Sofia.render('StateChange : '+str(game.state_change),True,red),(200,270))
-        display_surface.blit(Sofia.render('AuthorityChange : '+str(game.client.authority_advance),True,red),(200,340))
-        '''
         
         if game.state[0]=='object_place':
-            display_surface.blit(start_word,start_word.get_rect(center=game.start_rect.center))
+            display_surface.blit(start_word,start_word.get_rect(center=button.center))
         elif game.state[0]=='send_map':
-            display_surface.blit(wait_word_1,run_word.get_rect(center=game.start_rect.center))
+            display_surface.blit(wait_word_1,wait_word_1.get_rect(center=button.center))
         elif game.state[0]=='receive_map':
-            display_surface.blit(wait_word_2,run_word.get_rect(center=game.start_rect.center))
-        elif game.state[0]=='readyy':
-            display_surface.blit(wait_word_3,run_word.get_rect(center=game.start_rect.center))
+            display_surface.blit(wait_word_2,wait_word_2.get_rect(center=button.center))
+        elif game.state[0]=='ready':
+            display_surface.blit(wait_word_3,wait_word_3.get_rect(center=button.center))
         elif game.state[0]=='run_phase':
-            display_surface.blit(run_word,run_word.get_rect(center=game.start_rect.center))
+            display_surface.blit(run_word,run_word.get_rect(center=button.center))
         pygame.display.update()
 
         #display_surface.blit(game.console,(0,0))
@@ -123,12 +118,12 @@ def Draw_grid(surface):
 grid =pygame.Surface((1920,1080),pygame.SRCALPHA)
 #Draw_grid(grid)
 
-
-start_word=Goldie.render('Send',True,(100,200,10))
-run_word=Goldie.render('run',True,(200,10,10))
-wait_word_1=Goldie.render('waiting.',True,(200,10,10))
-wait_word_2=Goldie.render('waiting..',True,(200,10,10))
-wait_word_3=Goldie.render('waiting...',True,(200,10,10))
+button=pygame.Rect(840,960,240,90)
+start_word=Chomsky.render('Send',True,(100,200,10))
+run_word=Chomsky.render('run',True,(200,10,10))
+wait_word_1=Chomsky.render('waiting.',True,(10,80,10))
+wait_word_2=Chomsky.render('waiting..',True,(10,80,10))
+wait_word_3=Chomsky.render('waiting...',True,(10,80,10))
 #experimental code end.
 
 if __name__ == '__main__':

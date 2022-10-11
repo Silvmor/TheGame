@@ -14,15 +14,15 @@ class Weapon():
 	def crystal_red(self):
 		self.image=Still('assets/weapon/crystal_red.png')
 		self.image.resize(70,70)
-		self.effect='self.took(),self.remove()'
+		self.effect='self.took();self.remove()'
 	def mine(self):
 		self.image=Still('assets/weapon/mine.png')
 		self.image.resize(50,50)
-		self.effect='self.take_damage(1),self.remove()'
+		self.effect='self.take_damage(1);self.remove()'
 	def bomb(self):
 		self.image=Still('assets/weapon/bomb.png')
 		self.image.resize(50,50)
-		self.effect='self.take_damage(1),self.remove()'
+		self.effect='self.take_damage(1);self.remove()'
 	def goal(self):
 		self.image=Still('assets/weapon/goal.png')
 		self.image.resize(70,70)
