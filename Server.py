@@ -63,15 +63,16 @@ def authority(message,sock,ID):
     global State_ADVANCE
     RML(message)
     split = message.split(',')
-    if split.pop(0)=='MS':
+    temp = split.pop(0)
+    if temp=='MS':
         players[ID]['matrix']=ast.literal_eval(message[3:])
         set_player(ID)
         if players[not ID]['player']!=[]:
             set_opponents()
             State_ADVANCE=[1,1]
-    elif split.pop(0)=='OK':
+    elif temp=='OK':
         State_ADVANCE[ID]+=1
-    elif split.pop(0)=='RR':
+    elif temp=='RR':
         '''here you receive effects in split'''
         pass
 
@@ -121,6 +122,7 @@ def update(sock,ID):
         State_ADVANCE[ID]+=1
     elif State_ADVANCE==[3,3] or (State_ADVANCE[not ID]==4 and State_ADVANCE[ID]==3):
         '''send KO = begin run_phase'''
+        State_ADVANCE[ID]+=1
         sender('KO',sock,ID)
 def forward(message,sock,ID):
     pass

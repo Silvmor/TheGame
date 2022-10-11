@@ -77,6 +77,11 @@ def main():
         game.game_update(display_surface)
         Event_handler()
         fps.show(display_surface)
+        '''
+        display_surface.blit(Sofia.render('State : '+str(game.state),True,red),(200,200))
+        display_surface.blit(Sofia.render('StateChange : '+str(game.state_change),True,red),(200,270))
+        display_surface.blit(Sofia.render('AuthorityChange : '+str(game.client.authority_advance),True,red),(200,340))
+        '''
         
         if game.state[0]=='object_place':
             display_surface.blit(start_word,start_word.get_rect(center=game.start_rect.center))
@@ -84,7 +89,7 @@ def main():
             display_surface.blit(wait_word_1,run_word.get_rect(center=game.start_rect.center))
         elif game.state[0]=='receive_map':
             display_surface.blit(wait_word_2,run_word.get_rect(center=game.start_rect.center))
-        elif game.state[0]=='ready':
+        elif game.state[0]=='readyy':
             display_surface.blit(wait_word_3,run_word.get_rect(center=game.start_rect.center))
         elif game.state[0]=='run_phase':
             display_surface.blit(run_word,run_word.get_rect(center=game.start_rect.center))
@@ -93,7 +98,7 @@ def main():
         #display_surface.blit(game.console,(0,0))
         #display_surface.blit(grid,(0,0))
         
-        #clock.tick(60)
+        clock.tick(60)
 
 def Quit():
     pygame.quit()

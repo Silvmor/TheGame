@@ -16,6 +16,7 @@ class TheGame():
         self.state = ['character_choose','free']
         self.state_change=0
         self.player = None
+        self.opponent=None
         self.buffer = []
 
         self.weapons = []
@@ -46,8 +47,7 @@ class TheGame():
             self.client.sender('MS,'+str(self.map))
         elif self.state[0]=='receive_map':
             self.set_opponent()
-        elif self.state[0]=='ready':
-            self.client.sender('OK')
+            
         elif self.state[0]=='object_place':
             self.set_matrix()
             self.set_inventory()
@@ -104,14 +104,20 @@ class TheGame():
                 self.player.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
                 surface.blit(Courier.render('Reveals : '+str(self.player.reveals),True,black),(30,1020))
+            if self.opponent:
+                self.opponent.SG.draw(surface)
+                surface.blit(Courier.render('Hp      : '+str(self.opponent.HP),True,black),(1430,990))
+                surface.blit(Courier.render('Reveals : '+str(self.opponent.reveals),True,black),(1430,1020))
         elif self.state[0]=='send_map':
             if self.client.authority_advance:
                 self.state[0]='receive_map'
                 self.client.authority_advance=0
-        elif self.state[0]=='ready':
+                self.state_change=1
+        elif self.state[0]=='readyy':
             if self.client.authority_advance:
-                self.state[0]=='run_phase'
+                self.state[0]='run_phase'
                 self.client.authority_advance=0
+
 
     #initial phase
     def menu(self):
@@ -364,8 +370,7 @@ class TheGame():
             self.state_change=1
 
     def use_effect(self):
-        self.client.sender('RR,'+self.effect)
-        eval(self.effect)
+        exec(self.effect)
         self.effect=''
 
     def rollback(self,effect):
@@ -382,16 +387,16 @@ class TheGame():
         pygame.draw.rect(self.overlay_fixed,(0,0,0,100),self.start_rect,width=5,border_radius=20)
 
     def set_opponent(self):
-        represent={'M':'mine','B':'bomb','P1':'Captain','P2':'Spy'}
-        temp_matrix=self.client.authority_messages.pop(0)
-        ast.literal_eval(temp_matrix)
+        represent={'M':'mine','B':'bomb','P1':'Captain','P2':'Spy','X1':'Captain','X2':'Spy'}
+        temp_message=self.client.authority_messages.pop(0)
+        temp_matrix=ast.literal_eval(temp_message)
         for x,row in enumerate(temp_matrix):
                 for y,cell in enumerate(row):
-                    if y<=self.level.w/2:
+                    if y<self.level.w/2:
                         continue
                     elif cell:
                         if cell[0] in ['X1','X2']:
-                            self.opponent=Character(represent[cell])
+                            self.opponent=Character(represent[cell[0]])
                             self.opponent.position=[y,x]
                             self.level.occupants[y][x]=[['block','X']]
                             self.opponent.animation.rect.center = ((self.level.x+y)*60+30,(self.level.y+x)*60-10)
@@ -400,7 +405,10 @@ class TheGame():
                             temp.image.rect.center=self.matrix[x][y].center
                             self.level.occupants[y][x]=[['weapon',temp]]
                             self.stills.append(temp.image)
-        self.state[0]='ready'
+                            
+        self.state[0]='readyy'
+        self.client.sender('OK')
+  
     def start_frame(self):
-        self.client.authority_messages.pop(0)
+        print(self.client.authority_messages.pop(0))
 

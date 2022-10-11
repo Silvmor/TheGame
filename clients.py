@@ -10,7 +10,8 @@ class Client():
     def connect(self,IP=None):
         if not IP:
             IP=socket.gethostname()
-        #self.sock.connect(('10.194.38.98',2300))
+        #IP='10.194.38.98'
+        IP='192.168.166.98'
         self.sock.connect((IP,2300))
         self.sock.setblocking(False)
         self.receiver()
@@ -45,4 +46,5 @@ class Client():
     def authority(self,result):
         self.authority_messages.append(result)
         self.authority_advance=1
+        print(result)
 
