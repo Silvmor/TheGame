@@ -27,21 +27,27 @@ class Level():
     def level_1(self):
         self.x,self.y,self.w,self.h=11,6,10,5
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
-        self.allowed_weapon=['mine','bomb','mine']
-        self.counts=[2,2,2]
+        self.allowed_weapon=['mine','mine','mine']
+        self.weapon_counts=[1,1,1]
     def level_2(self):
         self.x,self.y,self.w,self.h=10,5,12,7
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
-        self.allowed_weapon=['mine','bomb','mine','bomb','mine','bomb']
-        self.counts=[2,2,2,1,1,1]
+        self.allowed_weapon=['mine','bomb','mine']
+        self.weapon_counts=[1,1,1]
     def level_3(self):
         self.x,self.y,self.w,self.h=8,5,16,7
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
+        self.allowed_weapon=['mine','bomb','mine','bomb','mine','bomb']
+        self.weapon_counts=[1,1,1,1,1,1]
     def level_4(self):
         self.x,self.y,self.w,self.h=7,5,18,7
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
+        self.allowed_weapon=['mine','bomb','mine','bomb','bomb','bomb']
+        self.weapon_counts=[1,1,1,1,1,1]
     def level_5(self):
         self.x,self.y,self.w,self.h=7,4,18,9
         self.occupants=[[ [] for i in range(self.h)] for i in range(self.w)]
+        self.allowed_weapon=['bomb','bomb','bomb','bomb','bomb','bomb','mine','bomb','mine']
+        self.weapon_counts=[1,1,1,1,1,1,1,1,1]
     def level_6(self):
         return 'credits'

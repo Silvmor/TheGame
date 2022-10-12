@@ -11,6 +11,7 @@ import ast
 import threading
 import sys
 
+
 class TheGame():
     def __init__(self):
         self.state = ['character_choose','free']
@@ -37,15 +38,16 @@ class TheGame():
         self.score=0
         self.current_frame=0
         self.last_update=0
-
+        self.explosions=[]
         self.client =Client()
+
 
     def state_manager(self):
         if self.state[0]=='run_phase':
             print('removed',self.client.authority_messages.pop(0))
             self.state_change=0
         elif self.state[0]=='send_map':
-            self.client.sender('MS;'+str(self.map))
+            self.client.sender('MS;HP_'+str(self.player.HP)+str(self.map))
         elif self.state[0]=='receive_map':
             self.set_opponent()
             
@@ -69,8 +71,11 @@ class TheGame():
                 self.state=['credits']
                 print('Thank You For Playing.')
             self.stills.clear()
+            self.weapons.clear()
             self.player=None
+            self.opponent=None 
             self.state_change=1
+            self.client.sender('GO')
 
     def game_update(self,surface):
         if self.state[0] in ['object_place','run_phase','send_map','ready']:
@@ -88,6 +93,14 @@ class TheGame():
                         self.draw_select(surface,(100,0,0,255),cell,0)
             elif self.state[0]=='run_phase':
                 self.current_frame+=1
+                if self.explosions!=[]:
+                    fake_exp=self.explosions.copy()
+                    for i in fake_exp:
+                        i.explode()
+                        surface.blit(i.image,i.rect)
+                        if i.current_sprite==0:
+                            self.explosions.remove(i)
+
                 if self.player.state=='walk':
                     if self.player.wait>0:
                         self.player.walk()
@@ -130,9 +143,8 @@ class TheGame():
                 surface.blit(Courier.render('Reveals : '+str(self.opponent.reveals),True,black),(1430,1020))
                 surface.blit(Courier.render('Position: '+str(self.opponent.position),True,black),(1430,1050))
 
-
     #initial phase
-    def menu(self):
+    def menu(self,surface):
         self.client =Client()
         IP=0
         client_thread=threading.Thread(target=self.client.connect(),args=(IP,))
@@ -191,13 +203,12 @@ class TheGame():
             cell=self.weapon_pos[int(index/3)][index%3]
             temp.place(cell.center[0],cell.center[1],wrt='c')
             temp.draw(self.overlay_fixed)
-            self.weapons.append([name,self.level.counts[index]])
+            self.weapons.append([name,self.level.weapon_counts[index]])
 
     def goal_set(self):
         temp=Weapon('crystal_blue')
         temp.image.rect.center=self.matrix[int(self.level.h/2)][0].center
         self.stills.append(temp.image)
-
         self.level.occupants[0][int(self.level.h/2)]=[['weapon',temp]]
 
         temp=Weapon('goal')
@@ -240,19 +251,25 @@ class TheGame():
                     temp=self.mouse_check(self.weapon_pos)
                     if temp:
                         #check for validity
-                        if self.state[1] in ['free','weapon_pos','character_pos']:
-                            self.state=self.state=['object_place','weapon_pos',[temp[1],temp[2]]]
-                        elif self.state[1]=='matrix':
-                            self.weapon_place(temp[1],temp[2],self.state[2][0],self.state[2][1])
+                        if self.level.weapon_counts[temp[1]*3+temp[2]]>0:
+                            if self.state[1] in ['free','weapon_pos','character_pos']:
+                                self.state=['object_place','weapon_pos',[temp[1],temp[2]]]
+                            elif self.state[1]=='matrix':
+                                self.weapon_place(temp[1],temp[2],self.state[2][0],self.state[2][1])
+                                self.state=['object_place','free']
+                        else:
                             self.state=['object_place','free']
 
                     else:
                         temp=self.mouse_check(self.character_pos)
                         if temp:
-                            if self.state[1] in ['free','weapon_pos','character_pos']:
-                                self.state=self.state=['object_place','character_pos',[temp[1],temp[2]]]
-                            elif self.state[1]=='matrix':
-                                self.character_place(temp[1],temp[2],self.state[2][0],self.state[2][1])
+                            if self.characters[temp[1]].HP>0:
+                                if self.state[1] in ['free','weapon_pos','character_pos']:
+                                    self.state=['object_place','character_pos',[temp[1],temp[2]]]
+                                elif self.state[1]=='matrix':
+                                    self.character_place(temp[1],temp[2],self.state[2][0],self.state[2][1])
+                                    self.state=['object_place','free']
+                            else:
                                 self.state=['object_place','free']
                         else:
                             self.state=['object_place','free']
@@ -289,6 +306,7 @@ class TheGame():
     def weapon_place(self,from_x,from_y,to_x,to_y):
         if self.level.occupants[to_y][to_x]==[]:
             temp=Weapon(self.weapons[from_x*3+from_y][0])
+            self.level.weapon_counts[from_x*3+from_y]-=1
             temp.image.rect.center=self.matrix[to_x][to_y].center
             self.level.occupants[to_y][to_x]=[['weapon',temp]]
             self.map[to_x][to_y]=[temp.id]
@@ -350,7 +368,7 @@ class TheGame():
         effect=f"self.do_opponent_move({new_x},{new_y},{swap[entry]})"
         for i,char in enumerate(msg):
             if char==';':
-                effect+={msg[i:]}
+                effect+=msg[i:]
                 break
         self.opponent_effect=effect
     def opponent_move(self,x,y,entry):
@@ -368,10 +386,13 @@ class TheGame():
                     return 1
                 elif occupant[0][0]=='weapon':
                     if occupant[0][1].activated:
-                        if occupant[0][1].id == ['CB']:
+                        if occupant[0][1].id == 'CB':
                             print(f"In front : {occupant} at {new_x} , {new_y}")
                             return 0
-                        if occupant[0][1].effect:
+                        if occupant[0][1].effect=='empty':
+                            self.effect=f"self.move({new_x},{new_y},{entry})"
+
+                        else:
                             self.effect=f"self.move({new_x},{new_y},{entry});{occupant[0][1].effect}"
                     else:
                         self.effect=f"self.move({new_x},{new_y},{entry})"
@@ -394,6 +415,9 @@ class TheGame():
         self.opponent.position=[x,y]
     def take_damage(self,amount):
         self.player.HP-=amount
+        temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
+        temp[1].expl.rect.center=self.matrix[self.player.position[1]][self.player.position[0]].center
+        self.explosions.append(temp[1].expl)
         #could be in negative
         if self.player.HP<=0:
             self.death()
@@ -401,10 +425,16 @@ class TheGame():
         self.player.HP+=amount
     def opponent_take_damage(self,amount):
         self.opponent.HP-=amount
+        temp=self.level.occupants[self.opponent.position[0]][self.opponent.position[1]][0]
+        temp[1].expl.rect.center=self.matrix[self.opponent.position[1]][self.opponent.position[0]].center
+        self.explosions.append(temp[1].expl)
+        if self.opponent.HP<=0:
+            self.opponent_death()
     def remove(self):
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].activated=0
         self.stills.remove(temp[1].image)
+
     def opponent_remove(self):
         temp=self.level.occupants[self.opponent.position[0]][self.opponent.position[1]][0]
         temp[1].activated=0
@@ -464,7 +494,8 @@ class TheGame():
     def set_opponent(self):
         represent={'M':'mine','B':'bomb','P1':'Captain','P2':'Spy','X1':'Captain','X2':'Spy'}
         temp_message=self.client.authority_messages.pop(0)
-        temp_matrix=ast.literal_eval(temp_message)
+        HP=temp_message[3]
+        temp_matrix=ast.literal_eval(temp_message[4:])
         for x,row in enumerate(temp_matrix):
                 for y,cell in enumerate(row):
                     if y<self.level.w/2:
@@ -481,6 +512,7 @@ class TheGame():
                             self.level.occupants[y][x]=[['weapon',temp]]
                             self.stills.append(temp.image)
                             
+        self.opponent.HP=int(HP)
         self.state[0]='ready'
         self.client.sender('OK')
 

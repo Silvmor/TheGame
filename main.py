@@ -64,7 +64,7 @@ def main():
     game  = TheGame()
     client_thread=threading.Thread(target=game.client.connect)
     client_thread.start()
-    #game.menu()
+    #game.menu(display_surface)
     game.state_manager()
 
     
