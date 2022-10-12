@@ -17,8 +17,10 @@ display_surface = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 pygame.display.set_caption('Server')
 
 def accept_connections():
-    global index,threads
+    global index ,threads,running
+    index=0
     while index<2:
+        running[index]=1
         connectionSocket, address = serverSocket.accept()
         RML((f"Client_{index} {address} is connected."))
         connections.append(connectionSocket)
@@ -27,13 +29,12 @@ def accept_connections():
         index+=1
 
 def connection(sock,ID):
+    global running
     sock.setblocking(False)
     receiver_thread=threading.Thread(target=receiver,args=(sock,ID))
     receiver_thread.start()
-    while True :
+    while running[ID]:
         update(sock,ID)
-    sock.shutdown(socket.SHUT_RDWR)
-    sock.close()
 
 def sender(msg,sock,ID):
     totalsent = 0
@@ -42,13 +43,13 @@ def sender(msg,sock,ID):
         if sent == 0:
             raise RuntimeError("socket connection broken")
         totalsent = totalsent + sent
-    RML(msg)
+    RML(f'Sent_{int(ID)} : {msg}')
 
 def receiver(sock,ID):
     chunks=[]
     while True:
         try:
-            chunk = sock.recv(8).decode("utf-8")
+            chunk = sock.recv(1).decode("utf-8")
         except:
             if chunks:
                 result=''.join(chunks)
@@ -61,20 +62,30 @@ def receiver(sock,ID):
 
 def authority(message,sock,ID):
     global State_ADVANCE
-    RML(message)
-    split = message.split(',')
+    RML(f'Client_{ID} : {message}')
+    split = message.split(';')
     temp = split.pop(0)
     if temp=='MS':
-        players[ID]['matrix']=ast.literal_eval(message[3:])
+        players[ID]['HP']=int(message[6])
+        players[not ID]['opponent_HP']=int(message[6])
+        players[ID]['matrix']=ast.literal_eval(message[7:])
         set_player(ID)
         if players[not ID]['player']!=[]:
             set_opponents()
             State_ADVANCE=[1,1]
     elif temp=='OK':
         State_ADVANCE[ID]+=1
+    elif temp=='GO':
+        State_ADVANCE[ID]+=1
+
     elif temp=='RR':
         '''here you receive effects in split'''
+            
+        fw_msg = str(';'.join([f'{x[:5]}opponent_{x[5:]}' for x in split[1:]])) #rajan
+        sender(fw_msg, connections[not ID], not ID)
         pass
+
+
 
 def set_player(ID):
     for y,row in enumerate(players[ID]['matrix']):
@@ -115,15 +126,22 @@ def set_opponents():
     players[1]['matrix'][int(h/2)+1][w-1]='Gx'
 
 def update(sock,ID):
+    global State_ADVANCE
     if State_ADVANCE==[1,1] or (State_ADVANCE[not ID]==2 and State_ADVANCE[ID]==1):
         '''send matrix'''
-        msg=str(players[ID]['matrix'])
+        msg='HP_'+str(players[ID]['opponent_HP'])+str(players[ID]['matrix'])
         sender(msg,sock,ID)
         State_ADVANCE[ID]+=1
     elif State_ADVANCE==[3,3] or (State_ADVANCE[not ID]==4 and State_ADVANCE[ID]==3):
         '''send KO = begin run_phase'''
         State_ADVANCE[ID]+=1
         sender('KO',sock,ID)
+    elif State_ADVANCE==[5,5]:
+        '''send KO = begin run_phase'''
+        State_ADVANCE=[0,0]
+        next_level()
+
+
 def forward(message,sock,ID):
     pass
 def rollback(message,sock,ID):
@@ -149,6 +167,9 @@ def Event_handler():
                     user_text=user_text[:-1]
                 elif event.unicode=='~':
                     exec('log_surface.fill(white);global y;y=50;RML("Server Logs :")')
+                elif event.unicode == '^':
+                    restart()
+
                 else :
                     user_text += event.unicode
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -159,6 +180,19 @@ def Event_handler():
     pygame.draw.rect(display_surface,black,(50,1010,1820,60),4)
     User_surface = NixieOne.render(user_text,True,red)
     display_surface.blit(User_surface,(70,1020))
+
+def restart():
+    global index,threads,connections,level_number,running
+    for connection in connections:
+        connection.shutdown(socket.SHUT_RDWR)
+        connection.close()
+    running=[0,0]
+    threads.clear()
+    connections.clear()
+    level_number=0
+    next_level()
+    connection_accept_thread = threading.Thread(target=accept_connections)
+    connection_accept_thread.start()
 
 def Quit():
     pygame.quit()
@@ -203,14 +237,32 @@ def RML(text,fsize=25,font=NixieOne_small,color=(40,0,40,255)):
         log_surface.blit(font.render(l,True, color), (x,y))
     y +=fsize
 
-def Load_level(level_number=0):
-    global server_1_pos,server_2_pos,w,h
+def next_level():
+    global server_1_pos,server_2_pos,w,h,level_number,players
     level_size=[(10,5),(12,7),(16,7),(18,7),(18,9)]
     w,h=level_size[level_number]
+    players.clear()
+    players=[{'ID':'A','player':[],'opponent':[],'matrix':[[ [] for i in range(w)] for i in range(h)], 'frame' : 0,'HP':0,'took':0,'opponent_HP':0,'opponent_took':0},
+        {'ID':'B','player':[],'opponent':[],'matrix':[[ [] for i in range(w)] for i in range(h)],  'frame' : 0,'HP':0,'took':0,'opponent_HP':0,'opponent_took':0} ]
+    server_1_pos.clear()
+    server_2_pos.clear()
     server_1_pos=[[ [] for i in range(w)] for i in range(h)]
     server_2_pos=[[ [] for i in range(w)] for i in range(h)]
+    surface.fill(white)
+    cell_surface.fill(white)
     set_matrix(1,1,w,h,server_1_pos)
     set_matrix(1,11,w,h,server_2_pos,(255,20,20,100))
+    surface.blit(cell_surface,(0,0))
+    surface.blit(Goldie_small.render("Player_1",True,black),(50,10))
+    surface.blit(Goldie_small.render("Player_2",True,black),(50,510))
+    level_number+=1
+    exec('log_surface.fill(white);global y;y=50;RML("Server Logs :")')
+    RML('Server Logs:\n'+
+    socket.gethostname()+
+    " is now running as "+
+    socket.gethostbyname(socket.gethostname())+
+    " on port "+
+    str(port))
 
 '''connection assignment'''
 index=0
@@ -220,6 +272,7 @@ serverSocket.bind((socket.gethostname(),port))
 serverSocket.listen(2)
 connections=[]
 threads=[]
+running=[0,0]
 connection_accept_thread=threading.Thread(target=accept_connections)
 connection_accept_thread.start()
 '''END'''
@@ -229,31 +282,32 @@ fps =FPS()
 w,h=10,5
 x,y=10,50
 user_text =''
-players=[{'ID':'A','player':[],'opponent':[],'matrix':[[ [] for i in range(w)] for i in range(h)]},
-        {'ID':'B','player':[],'opponent':[],'matrix':[[ [] for i in range(w)] for i in range(h)]}]
+players=[]
 move   = {'up':[-1,0],'down':[1,0],'left':[0,-1],'right':[0,1]}
 State_ADVANCE=[0,0]
+level_number=0
 '''END'''
 
 ''' To display level cell on server screen '''
 cell_surface= pygame.Surface((1920,1080),pygame.SRCALPHA)
+surface=pygame.Surface((1920,1080))
 server_1_pos=[]
 server_2_pos=[]
-Load_level()
-surface=pygame.Surface((1920,1080))
 surface.fill(white)
-surface.blit(cell_surface,(0,0))
 surface.blit(Goldie_small.render("Player_1",True,black),(50,10))
 surface.blit(Goldie_small.render("Player_2",True,black),(50,510))
 log_surface= pygame.Surface((920,1080))
 log_surface.fill(white)
+next_level()
 '''END'''
+'''
 RML('Server Logs:\n'+
     socket.gethostname()+
     " is now running as "+
     socket.gethostbyname(socket.gethostname())+
     " on port "+
     str(port))
+'''
 while True:
     ''' To run server display,show matrices and logs'''
     display_surface.fill(white)
