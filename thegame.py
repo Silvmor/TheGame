@@ -116,7 +116,8 @@ class TheGame():
                             self.opponent_use_effect()
                         
                 if self.client.authority_advance:
-                    self.opponent_set_wait(self.client.authority_messages.pop(0))
+                    message=self.client.authority_messages.pop(0)
+                    self.network_manage(message)
                     self.client.authority_advance=0
             elif self.state[0]=='send_map':
                 if self.client.authority_advance:
@@ -516,3 +517,7 @@ class TheGame():
         self.state[0]='ready'
         self.client.sender('OK')
 
+    def network_manage(self,message):
+        ''' handling messages recieve in the run phase from the server
+        '''
+        self.opponent_set_wait(message)
