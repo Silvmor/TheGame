@@ -73,7 +73,6 @@ class TheGame():
             self.state_change=1
 
     def game_update(self,surface):
-        up,down,left,right='up','down','left','right'
         if self.state[0] in ['object_place','run_phase','send_map','ready']:
             surface.blit(self.level.surface,(0,0))
             if self.state[0]=='object_place':
@@ -101,10 +100,10 @@ class TheGame():
                         self.opponent.walk()
                         self.opponent.wait-=1
                         if self.opponent.wait==0:
-                            self.use_effect()
-                            self.set_wait()
+                            self.opponent_use_effect()
+                        
                 if self.client.authority_advance:
-                    exec(self.client.authority_messages.pop(0))
+                    self.opponent_set_wait(self.client.authority_messages.pop(0))
                     self.client.authority_advance=0
             elif self.state[0]=='send_map':
                 if self.client.authority_advance:
@@ -124,10 +123,12 @@ class TheGame():
                 self.player.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
                 surface.blit(Courier.render('Reveals : '+str(self.player.reveals),True,black),(30,1020))
+                surface.blit(Courier.render('Position: '+str(self.player.position),True,black),(30,1050))
             if self.opponent:
                 self.opponent.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.opponent.HP),True,black),(1430,990))
                 surface.blit(Courier.render('Reveals : '+str(self.opponent.reveals),True,black),(1430,1020))
+                surface.blit(Courier.render('Position: '+str(self.opponent.position),True,black),(1430,1050))
 
 
     #initial phase
@@ -197,7 +198,7 @@ class TheGame():
         temp.image.rect.center=self.matrix[int(self.level.h/2)][0].center
         self.stills.append(temp.image)
 
-        self.level.occupants[0][int(self.level.h/2)]=[['block',temp]]
+        self.level.occupants[0][int(self.level.h/2)]=[['weapon',temp]]
 
         temp=Weapon('goal')
         temp.image.rect.center=self.matrix[int(self.level.h/2)-1][0].center
@@ -330,6 +331,30 @@ class TheGame():
         if not self.buffer:
             self.player.wait=0
             self.player.state='idle'
+    def opponent_set_wait(self,msg):
+        swap={'up':'down','down':'up','left':'right','right':'left'}
+        up,down,left,right='up','down','left','right'
+        split=msg.split(';')
+        print("Whaaat : ",split[0])
+        x,y,entry=eval(split[0])
+        if self.opponent.direction!=swap[entry]:
+            self.opponent.direction=swap[entry]
+            self.opponent.idle(change=True)
+        else:
+            self.opponent.idle()
+        self.opponent.wait = 60
+        self.opponent.state='walk'
+        
+        new_x=self.level.w-x-1
+        new_y=self.level.h-y-1
+        effect=f"self.do_opponent_move({new_x},{new_y},{swap[entry]})"
+        for i,char in enumerate(msg):
+            if char==';':
+                effect+={msg[i:]}
+                break
+        self.opponent_effect=effect
+    def opponent_move(self,x,y,entry):
+        return (x,y,entry)
 
     def validate_move(self,entry):
         move = {"up":[0,-1],"down":[0,1],"left":[-1,0],"right":[1,0]}
@@ -343,10 +368,17 @@ class TheGame():
                     return 1
                 elif occupant[0][0]=='weapon':
                     if occupant[0][1].activated:
-                        self.effect=f"self.move({new_x},{new_y},{entry});{occupant[0][1].effect}"
+                        if occupant[0][1].id == ['CB']:
+                            print(f"In front : {occupant} at {new_x} , {new_y}")
+                            return 0
+                        if occupant[0][1].effect:
+                            self.effect=f"self.move({new_x},{new_y},{entry});{occupant[0][1].effect}"
+                    else:
+                        self.effect=f"self.move({new_x},{new_y},{entry})"
                     return 1
                 else:
-                   print("In front : ",occupant)
+                   print(f"In front : {occupant} at {new_x} , {new_y}")
+                   return 0
 
     def move(self,x,y,entry):
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P'])
@@ -356,21 +388,10 @@ class TheGame():
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P'])
         self.level.occupants[x][y].append(['block','P'])
         self.player.position=[x,y]
-    def opponent_move(self,x,y,entry):
-        swap={'up':'down','down':'up','left':'left','right':'left'}
-        if self.opponent.direction!=swap[entry]:
-            self.opponent.direction=swap[entry]
-            self.opponent.idle(change=True)
-        else:
-            self.opponent.idle()
-        self.opponent.wait = 60
-        self.opponent.state='walk'
-        new_x=self.level.w-x-1
-        new_y=self.level.h-y-1
-        print(new_x,new_y)
+    def do_opponent_move(self,x,y,entry):
         self.level.occupants[self.opponent.position[0]][self.opponent.position[1]].remove(['block','X'])
-        self.level.occupants[new_x][new_y].append(['block','X'])
-        self.opponent.position=[new_x,new_y]
+        self.level.occupants[x][y].append(['block','X'])
+        self.opponent.position=[x,y]
     def take_damage(self,amount):
         self.player.HP-=amount
         #could be in negative
@@ -390,23 +411,24 @@ class TheGame():
         self.stills.remove(temp[1].image)
     def undo_remove(self):
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
-        temp.activated=1
+        temp[1].activated=1
         self.stills.append(temp[1].image)
     def took(self):
-        self.state[1]='took'
+        self.player.took='took'
     def opponent_took(self):
-        pass
+        self.opponent.took='took'
     def undo_took(self):
-        self.state[1]='free'
+        self.player.took='free'
     def win(self):
-        if self.state[1]=='took':
+        if self.player.took=='took':
             #here first resolve all conflicts
             self.score+=1
             self.state=['win']
             self.state_change=1
     def opponent_win(self):
-        self.state=['win']
-        self.state_change=1
+        if self.opponent.took=='took':
+            self.state=['win']
+            self.state_change=1
     def death(self):
         #resolve all conflicts first
         self.state=['win']
@@ -420,6 +442,11 @@ class TheGame():
         up,down,left,right='up','down','left','right'
         exec(self.effect)
         self.effect=''
+
+    def opponent_use_effect(self):
+        up,down,left,right='up','down','left','right'
+        exec(self.opponent_effect)
+        self.opponent_effect=''
 
     def rollback(self,effect):
         eval(effect)

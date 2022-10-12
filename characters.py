@@ -19,6 +19,7 @@ class Character():
         self.position=[0,0]
         self.HP = 3
         self.reveals=3
+        self.took='free'
         eval('self.'+name+'()')
 
     def walk(self,change=False,speed=0.3,displace=1):

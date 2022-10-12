@@ -7,10 +7,6 @@ class Weapon():
 		weapon_call=eval('self.'+ID)
 		self.activated=1
 		weapon_call()
-	def crystal_blue(self):
-		self.image=Still('assets/weapon/crystal_blue.png')
-		self.image.resize(70,70)
-		self.effect=''
 	def crystal_red(self):
 		self.image=Still('assets/weapon/crystal_red.png')
 		self.image.resize(70,70)
@@ -27,8 +23,12 @@ class Weapon():
 		self.image=Still('assets/weapon/goal.png')
 		self.image.resize(70,70)
 		self.effect='self.win()'
+	def crystal_blue(self):
+		self.image=Still('assets/weapon/crystal_blue.png')
+		self.image.resize(70,70)
+		self.effect=''
 	def no_goal(self):
 		self.effect=''
 		self.image=Still('assets/weapon/no_goal.png')
 		self.image.resize(70,70)
-		self.effect=''
+		self.effect=None
