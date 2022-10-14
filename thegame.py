@@ -294,7 +294,7 @@ class TheGame():
             self.level.weapon_counts[from_x*3+from_y]-=1
             if self.level.weapon_counts[from_x*3+from_y]==0:
                 No=Still('assets/NO.png')
-                No.resize(70,70)
+                #No.resize(70,70)
                 cell=self.weapon_pos[from_x][from_y]
                 No.place(cell.center[0],cell.center[1],wrt='c')
                 No.draw(self.level.surface)

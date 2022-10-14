@@ -6,10 +6,12 @@ class Game_World():
     
     def move(self,x,y,entry):
         temp=self.data['matrix'][self.data['player'][1]][self.data['player'][0]].pop()
+        print(f'Player removed : {temp}')
         self.data['player']=[x,y]
         self.data['matrix'][self.data['player'][1]][self.data['player'][0]].append(temp)
 
     def remove(self):
+        print(f'weapon at : {[self.data['player'][1]][self.data['player'][0]]}')
         self.data['matrix'][self.data['player'][1]][self.data['player'][0]].pop(0)
 
     def took(self):
@@ -20,12 +22,14 @@ class Game_World():
     
     def opponent_move(self,x,y,entry):
         temp=self.data['matrix'][self.data['opponent'][1]][self.data['opponent'][0]].pop()
+        print(f'Opponent removed : {temp}')
         new_x=self.w-x-1
         new_y=self.h-y-1
         self.data['opponent']=[new_x,new_y]
         self.data['matrix'][self.data['opponent'][1]][self.data['opponent'][0]].append(temp)
     
     def opponent_remove(self):
+        print(f'op_weapon at : {[self.data['opponent'][1]][self.data['opponent'][0]]}')
         self.data['matrix'][self.data['opponent'][1]][self.data['opponent'][0]].pop(0)
 
     def opponent_took(self):
