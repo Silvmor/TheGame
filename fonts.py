@@ -16,5 +16,6 @@ A1942report     = pygame.font.Font("assets/Fonts/A1942report.ttf",50)
 DirtyFox        = pygame.font.Font("assets/Fonts/DirtyFox.ttf",50)
 Courier         = pygame.font.Font("assets/Fonts/Courier.ttf",20)
 Courier_small   = pygame.font.Font("assets/Fonts/Courier.ttf",15)
+Courier_xsmall   = pygame.font.Font("assets/Fonts/Courier.ttf",10)
 Courier_big     = pygame.font.Font("assets/Fonts/Courier.ttf",40)
 

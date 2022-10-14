@@ -1,13 +1,13 @@
+import sys
+import ast
 import pygame
+import socket
+import threading
 import screeninfo
 from fonts      import *
 from colors     import *
-from fps import FPS
-import sys
-import threading
-import ast
-import socket
-from gameworld import Game_World
+from fps        import FPS
+from gameworld  import Game_World
 
 
 ''' initialize '''
@@ -16,7 +16,11 @@ screen          = screeninfo.get_monitors()[0]
 clock           = pygame.time.Clock()
 display_surface = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 pygame.display.set_caption('Server')
+'''initialization end'''
 
+
+
+'''network operations'''
 def accept_connections():
     global index ,threads,running
     index=0
@@ -63,18 +67,18 @@ def receiver(sock,ID):
         if chunk == '':
             raise RuntimeError("socket connection broken")
         chunks.append(chunk)
-mess=''
+
 def authority(message,sock,ID):
     global State_ADVANCE,mess
     RML(f'Client_{ID} : {message}')
     split = message.split(';')
     temp = split.pop(0)
     if temp=='MS':
-        players[ID]['HP']=int(message[6])
-        players[not ID]['opponent_HP']=int(message[6])
-        players[ID]['matrix']=ast.literal_eval(message[7:])
+        players[ID].data['HP']=int(message[6])
+        players[not ID].data['opponent_HP']=int(message[6])
+        players[ID].data['matrix']=ast.literal_eval(message[7:])
         set_player(ID)
-        if players[not ID]['player']!=[]:
+        if players[not ID].data['player']!=[]:
             set_opponents()
             State_ADVANCE=[1,1]
     elif temp=='OK':
@@ -91,10 +95,13 @@ def authority(message,sock,ID):
             check(ID)
         else:
             messageCache[ID].append(split)
-
+'''END'''
  
-'''  RAJAN CODE START  '''
+
+
+'''move validation'''
 under_checking=0
+messageCache = [[],[]]
 def check(ID):
     global under_checking
     RML(f'\n{ID}_myCache : {messageCache[ID]}')
@@ -110,7 +117,7 @@ def check_move(ID):
     '''perform all moves in cache until not possible then done'''
     global w,h
     temp_player = Game_World(ID,w,h)
-    temp_player.data = ast.literal_eval(str(players[ID]))
+    temp_player.data = ast.literal_eval(str(players[ID].data))
 
     x_temp_moves=[[f'temp_player.{y[5:]}' for y in x[1:]] for x in messageCache[ID] ]
     x_temp_opponent_moves=[[f'temp_player.opponent_{y[5:]}' for y in x[1:]] for x in messageCache[not ID] ]
@@ -163,84 +170,84 @@ def validate(effects,temp_player):
 
 def forward(message ,ID):
     ''' message = [frame_no, self.move(x,y,direction), ... self.effects ...]'''
-    global player_0,player_1
+    print('forward_start :')
+    global player_0,player_1,players
     up,down,left,right='up','down','left','right'
     frame_number=message.pop(0)
     if message!=[]:
         if message[0]!='self.fake_move()':
             fw_msg =f'make_opponent_move;{frame_number};'+str(';'.join([f'{x[:5]}opponent_{x[5:]}' for x in message if (x != '' and x!='self.fake_move()')] ))  #rajan
             sender(fw_msg, connections[not ID], not ID)
-            temp_moves=[f'player_{int(ID)}.{x[5:]}' for x in message ]
-            temp_opponent_moves=[f'player_{int(not ID)}.opponent_{x[5:]}' for x in message]
-            for move in temp_moves:
-                RML('Move : '+move)
+            temp_moves=[f'players[int(ID)].{x[5:]}' for x in message ]
+            temp_opponent_moves=[f'players[int(not ID)].opponent_{x[5:]}' for x in message]
+            RML(f"{int(ID)}_perform"+str(temp_moves))
+            RML(f"{int(not ID)}_perform"+str(temp_opponent_moves))
+            for move_player in temp_moves:
+                RML('Move : '+move_player)
                 try:
-                    exec(move)
+                    eval(move_player)
                 except Exception as e:
                     RML(f"NOT PERFORMED AS : {e}")
-            for move in temp_opponent_moves:
-                RML('op_Move : '+move)
+            for move_op in temp_opponent_moves:
+                RML('op_Move : '+move_op)
                 try:
-                    exec(move)
+                    eval(move_op)
                 except Exception as e:
                     RML(f"NOT PERFORMED AS : {e}")
     else:
         RML("Error_forwarding_empty")
+    print('forward_End :')
 
 def rollback(ID):
-    sender('rollback;'+str(players[ID]),connections[ID],ID)
+    sender('rollback;'+str(players[ID].data),connections[ID],ID)
+'''END'''
 
 
 
-messageCache = [[],[]]
-
-
-
-''' RAJAN CODE END ''' 
-
+'''Player data Initialization'''
 def set_player(ID):
-    for y,row in enumerate(players[ID]['matrix']):
+    for y,row in enumerate(players[ID].data['matrix']):
         for x,cell in enumerate(row):
             if cell!=[]:
                 if cell[0] in ['P1','P2']:
-                    players[ID]['player']=[x,y]
-                    players[not ID]['opponent']=[w-x-1,h-y-1]
+                    players[ID].data['player']=[x,y]
+                    players[not ID].data['opponent']=[w-x-1,h-y-1]
 
 def set_opponents():
     global w,h
-    for y,row in enumerate(players[1]['matrix']):
+    for y,row in enumerate(players[1].data['matrix']):
         for x,cell in enumerate(row):
             if cell!=[]:
                 if cell[0] in ['P1','P2']:
-                    players[0]['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
+                    players[0].data['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
                 else:
-                    players[0]['matrix'][h-y-1][w-x-1]=cell
+                    players[0].data['matrix'][h-y-1][w-x-1]=ast.literal_eval(str(cell))
 
-    for y,row in enumerate(players[0]['matrix']):
+    for y,row in enumerate(players[0].data['matrix']):
         for x,cell in enumerate(row):
             if cell!=[]:
                 if cell[0] in ['P1','P2']:
-                    players[1]['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
+                    players[1].data['matrix'][h-y-1][w-x-1]=['X'+cell[0][1]]
                 elif cell[0] in ['X1','X2']:
-                    players[1]['matrix'][h-y-1][w-x-1]=['P'+cell[0][1]]
+                    players[1].data['matrix'][h-y-1][w-x-1]=['P'+cell[0][1]]
 
                 else:
-                    players[1]['matrix'][h-y-1][w-x-1]=cell
+                    players[1].data['matrix'][h-y-1][w-x-1]=ast.literal_eval(str(cell))
 
-    players[0]['matrix'][int(h/2)][0]=['CB']
-    players[0]['matrix'][int(h/2)-1][0]=['Gp']
-    players[0]['matrix'][int(h/2)][w-1]=['CR']
-    players[0]['matrix'][int(h/2)+1][w-1]=['Gx']
-    players[1]['matrix'][int(h/2)][0]=['CB']
-    players[1]['matrix'][int(h/2)-1][0]=['Gp']
-    players[1]['matrix'][int(h/2)][w-1]=['CR']
-    players[1]['matrix'][int(h/2)+1][w-1]=['Gx']
+    players[0].data['matrix'][int(h/2)][0]=['CB']
+    players[0].data['matrix'][int(h/2)-1][0]=['Gp']
+    players[0].data['matrix'][int(h/2)][w-1]=['CR']
+    players[0].data['matrix'][int(h/2)+1][w-1]=['Gx']
+    players[1].data['matrix'][int(h/2)][0]=['CB']
+    players[1].data['matrix'][int(h/2)-1][0]=['Gp']
+    players[1].data['matrix'][int(h/2)][w-1]=['CR']
+    players[1].data['matrix'][int(h/2)+1][w-1]=['Gx']
 
 def update(sock,ID):
     global State_ADVANCE
     if State_ADVANCE==[1,1] or (State_ADVANCE[not ID]==2 and State_ADVANCE[ID]==1):
         '''send matrix'''
-        msg='set_matrix;HP_'+str(players[ID]['opponent_HP'])+str(players[ID]['matrix'])
+        msg='set_matrix;HP_'+str(players[ID].data['opponent_HP'])+str(players[ID].data['matrix'])
         sender(msg,sock,ID)
         State_ADVANCE[ID]+=1
     elif State_ADVANCE==[3,3] or (State_ADVANCE[not ID]==4 and State_ADVANCE[ID]==3):
@@ -256,12 +263,11 @@ def update(sock,ID):
         State_ADVANCE=[0,0]
         RML('Call to next Level')
         next_level()
+'''End'''
 
 
 
-
-
-
+'''Simulation Operations'''
 def Event_handler():
     global user_text
     events=pygame.event.get()
@@ -323,47 +329,31 @@ def set_matrix(x,y,w,h,matrix,color=(0,255,255,100)):
 def writer(matrix,matrix_pos):
     for i,row in enumerate(matrix):
         for j,cell in enumerate(row):
-            text=Courier_small.render(str(cell),True,black)
+            text=Courier_xsmall.render(str(cell),True,black)
             text_rect=text.get_rect()
             text_rect.center=matrix_pos[i][j].center
             display_surface.blit(text,text_rect)
 
 def show_stats():
     temp=[]
-    temp.append(Courier_small.render('position : '+str(players[0]['player']),True,black))
-    temp.append(Courier_small.render('HP : '+str(players[0]['HP']),True,black))
-    temp.append(Courier_small.render('Took : '+str(players[0]['took']),True,black))
-    temp.append(Courier_small.render('OP_position : '+str(players[0]['opponent']),True,black))
-    temp.append(Courier_small.render('OP_HP : '+str(players[0]['opponent_HP']),True,black))
-    temp.append(Courier_small.render('OP_Took : '+str(players[0]['opponent_took']),True,black))
+    temp.append(Courier_small.render('position : '+str(players[0].data['player']),True,black))
+    temp.append(Courier_small.render('HP : '+str(players[0].data['HP']),True,black))
+    temp.append(Courier_small.render('Took : '+str(players[0].data['took']),True,black))
+    temp.append(Courier_small.render('OP_position : '+str(players[0].data['opponent']),True,black))
+    temp.append(Courier_small.render('OP_HP : '+str(players[0].data['opponent_HP']),True,black))
+    temp.append(Courier_small.render('OP_Took : '+str(players[0].data['opponent_took']),True,black))
     for i,word in enumerate(temp):
         display_surface.blit(word,(300*i+200,5))
 
     temp.clear()
-    temp.append(Courier_small.render('position : '+str(players[1]['player']),True,(150,10,10)))
-    temp.append(Courier_small.render('HP : '+str(players[1]['HP']),True,(150,10,10)))
-    temp.append(Courier_small.render('Took : '+str(players[1]['took']),True,(150,10,10)))
-    temp.append(Courier_small.render('OP_position : '+str(players[1]['opponent']),True,(150,10,10)))
-    temp.append(Courier_small.render('OP_HP : '+str(players[1]['opponent_HP']),True,(150,10,10)))
-    temp.append(Courier_small.render('OP_Took : '+str(players[1]['opponent_took']),True,(150,10,10)))
+    temp.append(Courier_small.render('position : '+str(players[1].data['player']),True,(150,10,10)))
+    temp.append(Courier_small.render('HP : '+str(players[1].data['HP']),True,(150,10,10)))
+    temp.append(Courier_small.render('Took : '+str(players[1].data['took']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_position : '+str(players[1].data['opponent']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_HP : '+str(players[1].data['opponent_HP']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_Took : '+str(players[1].data['opponent_took']),True,(150,10,10)))
     for i,word in enumerate(temp):
         display_surface.blit(word,(300*i+200,20))
-
-
-'''
-def make_move(ID,direct):
-    player=players[ID]
-    opponent=players[not ID]
-    player['matrix'][player['player'][0]][player['player'][1]].remove('P')
-    player['player'][0]+=move[direct][0]
-    player['player'][1]+=move[direct][1]
-    player['matrix'][player['player'][0]][player['player'][1]].append('P')
-
-    opponent['matrix'][opponent['opponent'][0]][opponent['opponent'][1]].remove('X')
-    opponent['opponent'][0]+=move[direct][0]
-    opponent['opponent'][1]-=move[direct][1]
-    opponent['matrix'][opponent['opponent'][0]][opponent['opponent'][1]].append('X')
-'''
 
 def RML(text,fsize=25,font=NixieOne_small,color=(40,0,40,255)):
     global x,y,level_number
@@ -384,9 +374,7 @@ def next_level():
     level_size=[(10,5),(12,7),(16,7),(18,7),(18,9)]
     w,h=level_size[level_number]
     players.clear()
-    player_0=Game_World('A',w,h)
-    player_1=Game_World('B',w,h)
-    players=[player_0.data,player_1.data]
+    players=[Game_World('A',w,h),Game_World('B',w,h)]
     server_1_pos.clear()
     server_2_pos.clear()
     server_1_pos=[[ [] for i in range(w)] for i in range(h)]
@@ -410,6 +398,10 @@ def next_level():
     " on port "+
     str(port))
     on_hold=0
+'''END'''
+
+
+
 '''connection assignment'''
 index=0
 port=2300
@@ -446,6 +438,9 @@ log_surface= pygame.Surface((920,1080))
 log_surface.fill(white)
 next_level()
 '''END'''
+
+
+
 on_hold=0
 while True:
     ''' To run server display,show matrices and logs'''
@@ -454,11 +449,10 @@ while True:
     display_surface.blit(log_surface,(1000,0))
     if not on_hold:
         show_stats()
-        writer(players[0]['matrix'],server_1_pos)
-        writer(players[1]['matrix'],server_2_pos)
+        writer(players[0].data['matrix'],server_1_pos)
+        writer(players[1].data['matrix'],server_2_pos)
     '''END'''
     
-    '''For server to take manual inputs and run local code'''
     fps.show(display_surface)
     Event_handler()
     pygame.display.update()     
