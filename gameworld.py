@@ -11,7 +11,7 @@ class Game_World():
         self.data['matrix'][self.data['player'][1]][self.data['player'][0]].append(temp)
 
     def remove(self):
-        print(f'weapon at : {[self.data['player'][1]][self.data['player'][0]]}')
+        print(f'weapon at : {[[self.data['player'][1]],[self.data['player'][0]]]}')
         self.data['matrix'][self.data['player'][1]][self.data['player'][0]].pop(0)
 
     def took(self):
@@ -29,7 +29,7 @@ class Game_World():
         self.data['matrix'][self.data['opponent'][1]][self.data['opponent'][0]].append(temp)
     
     def opponent_remove(self):
-        print(f'op_weapon at : {[self.data['opponent'][1]][self.data['opponent'][0]]}')
+        print(f'op_weapon at : {[[self.data['opponent'][1]],[self.data['opponent'][0]]]}')
         self.data['matrix'][self.data['opponent'][1]][self.data['opponent'][0]].pop(0)
 
     def opponent_took(self):
