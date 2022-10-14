@@ -174,10 +174,16 @@ def forward(message ,ID):
             temp_opponent_moves=[f'player_{int(not ID)}.opponent_{x[5:]}' for x in message]
             for move in temp_moves:
                 RML('Move : '+move)
-                exec(move)
+                try:
+                    exec(move)
+                except Exception e:
+                    RML(f"NOT PERFORMED AS : {e}")
             for move in temp_opponent_moves:
                 RML('op_Move : '+move)
-                exec(move)
+                try:
+                    exec(move)
+                except Exception e:
+                    RML(f"NOT PERFORMED AS : {e}")
     else:
         RML("Error_forwarding_empty")
 
@@ -331,7 +337,7 @@ def show_stats():
     temp.append(Courier_small.render('OP_HP : '+str(players[0]['opponent_HP']),True,black))
     temp.append(Courier_small.render('OP_Took : '+str(players[0]['opponent_took']),True,black))
     for i,word in enumerate(temp):
-        display_surface.blit(word,(300*i+30,5))
+        display_surface.blit(word,(300*i+200,5))
 
     temp.clear()
     temp.append(Courier_small.render('position : '+str(players[1]['player']),True,(150,10,10)))
@@ -341,7 +347,7 @@ def show_stats():
     temp.append(Courier_small.render('OP_HP : '+str(players[1]['opponent_HP']),True,(150,10,10)))
     temp.append(Courier_small.render('OP_Took : '+str(players[1]['opponent_took']),True,(150,10,10)))
     for i,word in enumerate(temp):
-        display_surface.blit(word,(300*i+30,20))
+        display_surface.blit(word,(300*i+200,20))
 
 
 '''
