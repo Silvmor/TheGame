@@ -396,6 +396,7 @@ class TheGame():
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P'])
         self.level.occupants[x][y].append(['block','P'])
         self.player.position=[x,y]
+        self.player.animation.rect.center = ((self.level.x+x)*60+30,(self.level.y+y)*60-10)
     def undo_move(self,x,y):
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(['block','P'])
         self.level.occupants[x][y].append(['block','P'])
@@ -404,6 +405,7 @@ class TheGame():
         self.level.occupants[self.opponent.position[0]][self.opponent.position[1]].remove(['block','X'])
         self.level.occupants[x][y].append(['block','X'])
         self.opponent.position=[x,y]
+        self.opponent.animation.rect.center = ((self.level.x+x)*60+30,(self.level.y+y)*60-10)
     def take_damage(self,amount):
         self.player.HP-=amount
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
