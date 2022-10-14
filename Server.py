@@ -176,13 +176,13 @@ def forward(message ,ID):
                 RML('Move : '+move)
                 try:
                     exec(move)
-                except Exception e:
+                except Exception as e:
                     RML(f"NOT PERFORMED AS : {e}")
             for move in temp_opponent_moves:
                 RML('op_Move : '+move)
                 try:
                     exec(move)
-                except Exception e:
+                except Exception as e:
                     RML(f"NOT PERFORMED AS : {e}")
     else:
         RML("Error_forwarding_empty")
