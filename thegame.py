@@ -20,6 +20,7 @@ class TheGame():
         self.player = None
         self.opponent=None
         self.buffer = []
+        self.opponent_buffer=[]
 
         self.weapons = []
         self.characters=[]
@@ -224,7 +225,7 @@ class TheGame():
             else:
                 temp=self.mouse_check(self.matrix)
                 if temp:
-                    if temp[1]<self.level.w and temp[2]<self.level.h:
+                    if temp[2]<self.level.w/2 and temp[1]<self.level.h:
                         if self.state[1] in ['free','matrix']:
                             self.state=['object_place','matrix',[temp[1],temp[2]]]
                         else:
@@ -343,7 +344,8 @@ class TheGame():
         if not self.buffer:
             self.player.wait=0
             self.player.state='idle'
-    def opponent_set_wait(self,msg):
+    def opponent_set_wait(self):
+        msg=self.opponent_buffer.pop(0)
         swap={'up':'down','down':'up','left':'right','right':'left'}
         up,down,left,right='up','down','left','right'
         split=msg.split(';')
@@ -428,12 +430,18 @@ class TheGame():
     def remove(self):
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].activated=0
-        self.stills.remove(temp[1].image)
+        try:
+            self.stills.remove(temp[1].image)
+        except:
+            pass
 
     def opponent_remove(self):
         temp=self.level.occupants[self.opponent.position[0]][self.opponent.position[1]][0]
         temp[1].activated=0
-        self.stills.remove(temp[1].image)
+        try:
+            self.stills.remove(temp[1].image)
+        except:
+            pass
     def undo_remove(self):
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].activated=1
@@ -507,7 +515,7 @@ class TheGame():
                             temp=Weapon(represent[cell[0]])
                             temp.image.rect.center=self.matrix[x][y].center
                             self.level.occupants[y][x]=[['weapon',temp]]
-                            self.stills.append(temp.image)
+                            #self.stills.append(temp.image)
                             
         self.opponent.HP=int(HP)
         self.state[0]='ready'
@@ -522,7 +530,8 @@ class TheGame():
             '''received when opponent move is allowed'''
             frame_number=split.pop(0)
             perform=str(';'.join([x for x in split if x != '']))
-            self.opponent_set_wait(perform)
+            self.opponent_buffer.append(perform)
+            self.opponent_set_wait()
             '''make change to oswait as effect should be list'''
         elif code=='set_matrix':
             self.state[0]='receive_map'
@@ -554,7 +563,8 @@ class TheGame():
                     if(cell[0] in ['M','B','CR','CB']):
                         if not self.level.occupants[x][y][0][1].activated:
                             self.level.occupants[x][y][0][1].activated = 1
-                            self.stills.append(self.level.occupants[x][y][0][1].image)
+                            if x<self.level.w/2:
+                                self.stills.append(self.level.occupants[x][y][0][1].image)
                     if(cell[-1] in ['P1','P2']):
                         self.player.position=[x,y]
                         self.player.image.rect.center=self.matrix[y][x].center
