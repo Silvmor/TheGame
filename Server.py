@@ -331,7 +331,7 @@ def show_stats():
     temp.append(Courier_small.render('OP_HP : '+str(players[0]['opponent_HP']),True,black))
     temp.append(Courier_small.render('OP_Took : '+str(players[0]['opponent_took']),True,black))
     for i,word in enumerate(temp):
-        display_surface.blit(text,(150*i+30,30))
+        display_surface.blit(word,(150*i+30,30))
 
 
 '''
