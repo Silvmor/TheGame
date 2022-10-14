@@ -1,0 +1,334 @@
+Level : 3
+
+
+Server Logs:
+LAPTOP-51H8K36K is now running as 192.168.109.107 on port 2300
+Client_1 : MS;HP_3[[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['P2'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], ['M'], ['M'], ['M'], ['B'], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], ['B'], ['B'], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]]
+Client_0 : MS;HP_3[[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['P2'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]]
+Sent_1 : set_matrix;HP_3[[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['P2'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['Gp'], [], [], ['M'], ['M'], ['M'], ['B'], [], [], [], [], [], [], [], [], ['X2']], [['CB'], [], [], [], [], ['B'], ['B'], [], [], [], [], [], [], [], [], ['CR']], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['Gx']], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]]
+Sent_0 : set_matrix;HP_3[[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['Gp'], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []], [['CB'], [], [], [], [], [], [], [], [], ['B'], ['B'], [], [], [], [], ['CR']], [['P2'], [], [], [], [], [], [], [], [], ['B'], ['M'], ['M'], ['M'], [], [], ['Gx']], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ['X2']], [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]]
+Client_1 : OK
+Client_0 : OK
+Sent_1 : KO
+Sent_0 : KO
+Client_1 : RR;16352;self.move(1,1,right)
+
+1_myCache : [['16352', 'self.move(1,1,right)']]
+1_opCache : []
+Sent_0 : request_frame
+Client_0 : RR;16651;self.fake_move()
+
+0_myCache : [['16651', 'self.fake_move()']]
+0_opCache : [['16352', 'self.move(1,1,right)']]
+0_xTmp_moves : [['temp_player.fake_move()']]
+0_xop_Tmp_moves : [['temp_player.opponent_move(1,1,right)']]
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(1,1,right)']]
+Sent_0 : make_opponent_move;16352;self.opponent_move(1,1,right)
+True_perform['players[int(ID)].move(1,1,right)']
+False_perform['players[int(not ID)].opponent_move(1,1,right)']
+Client_1 : RR;16427;self.move(1,2,down)
+
+1_myCache : [['16427', 'self.move(1,2,down)']]
+Move : players[int(ID)].move(1,1,right)
+1_opCache : [['16651', 'self.fake_move()']]
+op_Move : players[int(not ID)].opponent_move(1,1,right)
+Sent_0 : request_frame
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(1,2,down)']]
+Sent_0 : make_opponent_move;16427;self.opponent_move(1,2,down)
+True_perform['players[int(ID)].move(1,2,down)']
+False_perform['players[int(not ID)].opponent_move(1,2,down)']
+Move : players[int(ID)].move(1,2,down)
+op_Move : players[int(not ID)].opponent_move(1,2,down)
+Client_0 : RR;16751;self.fake_move()
+Client_1 : RR;16497;self.move(2,2,right)
+
+1_myCache : [['16497', 'self.move(2,2,right)']]
+0_opCache : [['16497', 'self.move(2,2,right)']]
+1_opCache : [['16751', 'self.fake_move()']]
+0_xTmp_moves : [['temp_player.fake_move()']]
+Sent_0 : request_frame
+0_xop_Tmp_moves : [['temp_player.opponent_move(2,2,right)']]
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(2,2,right)']]
+Sent_0 : make_opponent_move;16497;self.opponent_move(2,2,right)
+True_perform['players[int(ID)].move(2,2,right)']
+False_perform['players[int(not ID)].opponent_move(2,2,right)']
+Move : players[int(ID)].move(2,2,right)
+op_Move : players[int(not ID)].opponent_move(2,2,right)
+Client_0 : RR;16832;self.fake_move()
+
+0_myCache : [['16832', 'self.fake_move()']]
+Client_1 : RR;16557;self.move(3,2,right);self.take_damage(1);self.remove()
+0_opCache : []
+0_xTmp_moves : [['temp_player.fake_move()']]
+
+1_myCache : [['16557', 'self.move(3,2,right)', 'self.take_damage(1)', 'self.remove()']]
+0_xop_Tmp_moves : [['temp_player.opponent_move(3,2,right)', 'temp_player.opponent_take_damage(1)', 'temp_player.opponent_remove()']]
+1_opCache : [['16832', 'self.fake_move()']]
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+Sent_0 : request_frame
+0_single_op_Tmp_moves : [['temp_player.opponent_move(3,2,right)', 'temp_player.opponent_take_damage(1)', 'temp_player.opponent_remove()']]
+Sent_0 : make_opponent_move;16557;self.opponent_move(3,2,right);self.opponent_take_damage(1);self.opponent_remove()
+True_perform['players[int(ID)].move(3,2,right)', 'players[int(ID)].take_damage(1)', 'players[int(ID)].remove()']
+False_perform['players[int(not ID)].opponent_move(3,2,right)', 'players[int(not ID)].opponent_take_damage(1)', 'players[int(not ID)].opponent_remove()']
+Move : players[int(ID)].move(3,2,right)
+Move : players[int(ID)].take_damage(1)
+Client_1 : RR;16617;self.move(4,2,right);self.take_damage(1);self.remove()
+Move : players[int(ID)].remove()
+e(4,2,right)', 'self.take_damage(1)', 'self.remove()']]
+1_opCache : [['16832', 'self.fake_move()']]
+op_Move : players[int(not ID)].opponent_move(3,2,right)
+op_Move : players[int(not ID)].opponent_take_damage(1)
+op_Move : players[int(not ID)].opponent_remove()
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(4,2,right)', 'temp_player.opponent_take_damage(1)', 'temp_player.opponent_remove()']]
+Client_1 : RR;16677;self.move(4,1,up)
+Sent_0 : make_opponent_move;16617;self.opponent_move(4,2,right);self.opponent_take_damage(1);self.opponent_remove()
+
+1_myCache : [['16677', 'self.move(4,1,up)']]
+ 'players[int(ID)].take_damage(1)', 'players[int(ID)].remove()']
+1_opCache : [['16832', 'self.fake_move()']]
+False_perform['players[int(not ID)].opponent_move(4,2,right)', 'players[int(not ID)].opponent_take_damage(1)', 'players[int(not ID)].opponent_remove()']
+Move : players[int(ID)].move(4,2,right)
+Sent_0 : request_frame
+Move : players[int(ID)].take_damage(1)
+Move : players[int(ID)].remove()
+op_Move : players[int(not ID)].opponent_move(4,2,right)
+op_Move : players[int(not ID)].opponent_take_damage(1)
+op_Move : players[int(not ID)].opponent_remove()
+Client_1 : RR;16737;self.move(5,1,right)
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(4,1,up)']]
+Sent_0 : make_opponent_move;16677;self.opponent_move(4,1,up)
+True_perform['players[int(ID)].move(4,1,up)']
+False_perform['players[int(not ID)].opponent_move(4,1,up)']
+Move : players[int(ID)].move(4,1,up)
+op_Move : players[int(not ID)].opponent_move(4,1,up)
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(5,1,right)']]
+Client_1 : RR;16797;self.move(6,1,right)
+
+1_myCache : [['16797', 'self.move(6,1,right)']]
+Sent_0 : make_opponent_move;16737;self.opponent_move(5,1,right)
+1_opCache : [['16832', 'self.fake_move()']]
+True_perform['players[int(ID)].move(5,1,right)']
+Sent_0 : request_frame
+False_perform['players[int(not ID)].opponent_move(5,1,right)']
+Move : players[int(ID)].move(5,1,right)
+op_Move : players[int(not ID)].opponent_move(5,1,right)
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(6,1,right)']]
+Sent_0 : make_opponent_move;16797;self.opponent_move(6,1,right)
+True_perform['players[int(ID)].move(6,1,right)']
+False_perform['players[int(not ID)].opponent_move(6,1,right)']
+Move : players[int(ID)].move(6,1,right)
+op_Move : players[int(not ID)].opponent_move(6,1,right)
+Client_0 : RR;16937;self.fake_move()
+
+0_myCache : [['16937', 'self.fake_move()']]
+0_opCache : []
+Sent_1 : request_frame
+Client_1 : RR;16923;self.fake_move()
+Client_0 : RR;16993;self.fake_move()
+
+1_myCache : [['16923', 'self.fake_move()']]
+1_opCache : [['16937', 'self.fake_move()'], ['16993', 'self.fake_move()']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_fake_move()'], ['temp_player.opponent_fake_move()']]
+Client_0 : RR;17030;self.fake_move()
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_fake_move()']]
+Client_0 : RR;17135;self.fake_move()
+
+0_myCache : [['17135', 'self.fake_move()']]
+0_opCache : []
+Sent_1 : request_frame
+Client_1 : RR;16999;self.fake_move()
+
+1_myCache : [['16999', 'self.fake_move()']]
+1_opCache : [['17135', 'self.fake_move()']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_fake_move()']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_fake_move()']]
+Client_1 : RR;17212;self.move(6,2,down);self.take_damage(2);self.remove()
+
+1_myCache : [['17212', 'self.move(6,2,down)', 'self.take_damage(2)', 'self.remove()']]
+1_opCache : []
+Sent_0 : request_frame
+Client_1 : GO
+Client_0 : RR;17580;self.fake_move()
+
+0_myCache : [['17580', 'self.fake_move()']]
+0_opCache : [['17212', 'self.move(6,2,down)', 'self.take_damage(2)', 'self.remove()']]
+0_xTmp_moves : [['temp_player.fake_move()']]
+0_xop_Tmp_moves : [['temp_player.opponent_move(6,2,down)', 'temp_player.opponent_take_damage(2)', 'temp_player.opponent_remove()']]
+0_single_Tmp_moves : [['temp_player.fake_move()']]
+0_single_op_Tmp_moves : [['temp_player.opponent_move(6,2,down)', 'temp_player.opponent_take_damage(2)', 'temp_player.opponent_remove()']]
+Sent_0 : make_opponent_move;17212;self.opponent_move(6,2,down);self.opponent_take_damage(2);self.opponent_remove()
+True_perform['players[int(ID)].move(6,2,down)', 'players[int(ID)].take_damage(2)', 'players[int(ID)].remove()']
+False_perform['players[int(not ID)].opponent_move(6,2,down)', 'players[int(not ID)].opponent_take_damage(2)', 'players[int(not ID)].opponent_remove()']
+Move : players[int(ID)].move(6,2,down)
+Move : players[int(ID)].take_damage(2)
+Move : players[int(ID)].remove()
+op_Move : players[int(not ID)].opponent_move(6,2,down)
+op_Move : players[int(not ID)].opponent_take_damage(2)
+op_Move : players[int(not ID)].opponent_remove()
+Server Logs :
+Client_0 : RR;19511;self.move(1,4,right)
+
+0_myCache : [['19511', 'self.move(1,4,right)']]
+0_opCache : []
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Server Logs :
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Server Logs :
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Server Logs :
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+Server Logs :
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Server Logs :
+Client_1 : RR;17272;self.fake_move()
+
+1_myCache : [['17272', 'self.fake_move()']]
+1_opCache : [['19511', 'self.move(1,4,right)']]
+1_xTmp_moves : [['temp_player.fake_move()']]
+1_xop_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+1_single_Tmp_moves : [['temp_player.fake_move()']]
+1_single_op_Tmp_moves : [['temp_player.opponent_move(1,4,right)']]
+Sent_1 : request_frame
+Client_1 : RR;17272;self.fake_move()
