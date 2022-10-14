@@ -134,11 +134,6 @@ class TheGame():
                 surface.blit(Courier.render('Position: '+str(self.opponent.position),True,black),(1430,1050))
 
     #initial phase
-    def menu(self,surface):
-        self.client =Client()
-        IP=0
-        client_thread=threading.Thread(target=self.client.connect(),args=(IP,))
-        client_thread.start()
 
     def character_choose(self):
         #after finished
@@ -297,6 +292,13 @@ class TheGame():
         if self.level.occupants[to_y][to_x]==[]:
             temp=Weapon(self.weapons[from_x*3+from_y][0])
             self.level.weapon_counts[from_x*3+from_y]-=1
+            if self.level.weapon_counts[from_x*3+from_y]==0:
+                No=Still('assets/NO.png')
+                No.resize(70,70)
+                cell=self.weapon_pos[from_x][from_y]
+                No.place(cell.center[0],cell.center[1],wrt='c')
+                No.draw(self.level.surface)
+
             temp.image.rect.center=self.matrix[to_x][to_y].center
             self.level.occupants[to_y][to_x]=[['weapon',temp]]
             self.map[to_x][to_y]=[temp.id]

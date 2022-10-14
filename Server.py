@@ -322,6 +322,18 @@ def writer(matrix,matrix_pos):
             text_rect.center=matrix_pos[i][j].center
             display_surface.blit(text,text_rect)
 
+def show_stats():
+    temp=[]
+    temp.append(Courier_small.render('position : '+str(players[0]['player']),True,black))
+    temp.append(Courier_small.render('HP : '+str(players[0]['HP']),True,black))
+    temp.append(Courier_small.render('Took : '+str(players[0]['took']),True,black))
+    temp.append(Courier_small.render('OP_position : '+str(players[0]['opponent']),True,black))
+    temp.append(Courier_small.render('OP_HP : '+str(players[0]['opponent_HP']),True,black))
+    temp.append(Courier_small.render('OP_Took : '+str(players[0]['opponent_took']),True,black))
+    for i,word in enumerate(temp):
+        display_surface.blit(text,(150*i+30,30))
+
+
 '''
 def make_move(ID,direct):
     player=players[ID]
@@ -425,6 +437,7 @@ while True:
     display_surface.blit(surface,(0,0))
     display_surface.blit(log_surface,(1000,0))
     if not on_hold:
+        show_stats()
         writer(players[0]['matrix'],server_1_pos)
         writer(players[1]['matrix'],server_2_pos)
     '''END'''

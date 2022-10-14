@@ -22,6 +22,31 @@ inputs      = {'w':'up','a':'left','s':'down','d':'right','q':'no','e':'yes'}
 directions = {pygame.K_UP:'up',pygame.K_LEFT:'left',pygame.K_DOWN:'down',pygame.K_RIGHT:'right'}
 hat_directions={'(0, -1)':"up",'(0, 1)':'down','(1, 0)':'right','(-1, 0)':'left'}
 
+def menu():
+    user_text=''
+    while True:
+        display_surface.fill(white)
+        events=pygame.event.get()
+        if  events : 
+            for event in events :
+                if event.type == pygame.KEYDOWN:
+                    if event.key ==pygame.K_ESCAPE:
+                        Quit()
+                    elif event.key == pygame.K_RETURN :
+                        return user_text
+                    elif event.key ==pygame.K_BACKSPACE :
+                        user_text=user_text[:-1]
+                    else :
+                        user_text += event.unicode 
+                elif event.type == pygame.QUIT:
+                    Quit()             
+            del events
+        pygame.draw.rect(display_surface,black,(50,1010,1820,60),4)
+        User_surface = NixieOne.render(user_text,True,red)
+        display_surface.blit(User_surface,(70,1020))
+        pygame.display.update()
+
+
 def main():
     def Event_handler():
         events=pygame.event.get()
@@ -61,12 +86,11 @@ def main():
 
 
     #code start : below this line
-    #IP=menu()
-    #game  = TheGame(IP)
-    game  = TheGame()
+    IP=menu()
+    game  = TheGame(IP)
+    #game  = TheGame()
     client_thread=threading.Thread(target=game.client.connect)
     client_thread.start()
-    #game.menu(display_surface)
     game.state_manager()
     #code end : above this line
 
