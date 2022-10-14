@@ -87,8 +87,10 @@ def main():
 
     #code start : below this line
     IP=menu()
-    game  = TheGame(IP)
-    #game  = TheGame()
+    if IP!='0':
+        game  = TheGame(IP)
+    else:
+        game  = TheGame()
     client_thread=threading.Thread(target=game.client.connect)
     client_thread.start()
     game.state_manager()

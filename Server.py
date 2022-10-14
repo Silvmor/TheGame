@@ -331,7 +331,17 @@ def show_stats():
     temp.append(Courier_small.render('OP_HP : '+str(players[0]['opponent_HP']),True,black))
     temp.append(Courier_small.render('OP_Took : '+str(players[0]['opponent_took']),True,black))
     for i,word in enumerate(temp):
-        display_surface.blit(word,(150*i+30,30))
+        display_surface.blit(word,(300*i+30,5))
+
+    temp.clear()
+    temp.append(Courier_small.render('position : '+str(players[1]['player']),True,(150,10,10)))
+    temp.append(Courier_small.render('HP : '+str(players[1]['HP']),True,(150,10,10)))
+    temp.append(Courier_small.render('Took : '+str(players[1]['took']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_position : '+str(players[1]['opponent']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_HP : '+str(players[1]['opponent_HP']),True,(150,10,10)))
+    temp.append(Courier_small.render('OP_Took : '+str(players[1]['opponent_took']),True,(150,10,10)))
+    for i,word in enumerate(temp):
+        display_surface.blit(word,(300*i+30,20))
 
 
 '''
