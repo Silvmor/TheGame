@@ -553,6 +553,12 @@ class TheGame():
     def rollback(self,split):
         temp_player=ast.literal_eval(split)
         matrix=temp_player['matrix']
+        for row in self.level.occupants:
+            for cell in row:
+                if ['Bolck','P'] in cell:
+                    cell.remove(['Bolck','P'])
+                if ['Bolck','X'] in cell:
+                    cell.remove(['Bolck','X'])
         for y, row in enumerate(matrix):
             for x, cell in enumerate(row):
                 if cell == []:
@@ -567,11 +573,11 @@ class TheGame():
                                 self.stills.append(self.level.occupants[x][y][0][1].image)
                     if(cell[-1] in ['P1','P2']):
                         self.player.position=[x,y]
-                        self.player.image.rect.center=self.matrix[y][x].center
+                        self.player.animation.image.rect.center=self.matrix[y][x].center
                         self.level.occupants[x][y].append([['block','P']])
                     if(cell[-1] in ['X1','X2']):
                         self.opponent.position=[x,y]
-                        self.opponent.image.rect.center=self.matrix[y][x].center
+                        self.opponent.animation.image.rect.center=self.matrix[y][x].center
                         self.level.occupants[x][y].append([['block','X']])
 
 #implement latency
