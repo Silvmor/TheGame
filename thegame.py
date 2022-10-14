@@ -10,10 +10,11 @@ from clients import Client
 import ast
 import threading
 import sys
+from gameworld import Game_World
 
 
 class TheGame():
-    def __init__(self):
+    def __init__(self,IP=0):
         self.state = ['character_choose','free']
         self.state_change=0
         self.player = None
@@ -39,18 +40,18 @@ class TheGame():
         self.current_frame=0
         self.last_update=0
         self.explosions=[]
-        self.client =Client()
+        self.client =Client(IP)
+        #self.game_world=Game_World()
 
 
     def state_manager(self):
         if self.state[0]=='run_phase':
-            print('removed',self.client.authority_messages.pop(0))
             self.state_change=0
-        elif self.state[0]=='send_map':
-            self.client.sender('MS;HP_'+str(self.player.HP)+str(self.map))
-        elif self.state[0]=='receive_map':
-            self.set_opponent()
-            
+        elif self.state[0]=='character_choose':
+                self.character_choose()
+                self.state=['object_place','free']
+                self.level = Level()
+                self.state_change=1
         elif self.state[0]=='object_place':
             self.set_matrix()
             self.set_inventory()
@@ -60,11 +61,10 @@ class TheGame():
             self.start()
             self.legend()
             self.level.surface.blit(self.overlay_fixed,(0,0))
-        elif self.state[0]=='character_choose':
-                self.character_choose()
-                self.state=['object_place','free']
-                self.level = Level()
-                self.state_change=1
+        elif self.state[0]=='send_map':
+            self.client.sender('MS;HP_'+str(self.player.HP)+str(self.map))
+        elif self.state[0]=='pause':
+            self.client.sender('GO')
         elif self.state[0]=='win':
             self.state=['object_place','free']
             if self.level.next()=='credits':
@@ -75,23 +75,22 @@ class TheGame():
             self.player=None
             self.opponent=None 
             self.state_change=1
-            self.client.sender('GO')
 
     def game_update(self,surface):
-        if self.state[0] in ['object_place','run_phase','send_map','ready']:
+        if self.state[0] in ['object_place','send_map','ready','run_phase','pause']:
             surface.blit(self.level.surface,(0,0))
             if self.state[0]=='object_place':
                 cell=None
                 temp=[self.mouse_check(self.matrix) or self.mouse_check(self.character_pos) or self.mouse_check(self.weapon_pos)]
                 if self.state[1]!='free':
                     cell=eval(f"self.{self.state[1]}[{self.state[2][0]}][{self.state[2][1]}]")
-                    self.draw_select(surface,(200,0,0,50),cell)
+                    self.draw_select(surface,(200,0,0,50),cell)  
                 if temp[0]:
                     if temp[0][0]!=cell:
                         self.draw_select(surface,(0,200,200,50),temp[0][0])
                     else:
                         self.draw_select(surface,(100,0,0,255),cell,0)
-            elif self.state[0]=='run_phase':
+            if self.state[0]=='run_phase':
                 self.current_frame+=1
                 if self.explosions!=[]:
                     fake_exp=self.explosions.copy()
@@ -100,7 +99,6 @@ class TheGame():
                         surface.blit(i.image,i.rect)
                         if i.current_sprite==0:
                             self.explosions.remove(i)
-
                 if self.player.state=='walk':
                     if self.player.wait>0:
                         self.player.walk()
@@ -114,25 +112,16 @@ class TheGame():
                         self.opponent.wait-=1
                         if self.opponent.wait==0:
                             self.opponent_use_effect()
-                        
-                if self.client.authority_advance:
+           
+            if self.client.authority_advance:
                     message=self.client.authority_messages.pop(0)
                     self.network_manage(message)
-                    self.client.authority_advance=0
-            elif self.state[0]=='send_map':
-                if self.client.authority_advance:
-                    self.state[0]='receive_map'
-                    self.client.authority_advance=0
-                    self.state_change=1
-            elif self.state[0]=='ready':
-                if self.client.authority_advance:
-                    self.state[0]='run_phase'
-                    self.client.authority_advance=0
-                    self.state_change=1
+                    if self.client.authority_messages==[]:
+                        self.client.authority_advance=0
 
-            surface.blit(Courier.render('Wins    : '+str(self.score),True,black),(30,960))
             for image in self.stills:
                 image.draw(surface)
+            surface.blit(Courier.render('Wins    : '+str(self.score),True,black),(30,960))
             if self.player:
                 self.player.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
@@ -354,7 +343,6 @@ class TheGame():
         swap={'up':'down','down':'up','left':'right','right':'left'}
         up,down,left,right='up','down','left','right'
         split=msg.split(';')
-        print("Whaaat : ",split[0])
         x,y,entry=eval(split[0])
         if self.opponent.direction!=swap[entry]:
             self.opponent.direction=swap[entry]
@@ -454,19 +442,19 @@ class TheGame():
         if self.player.took=='took':
             #here first resolve all conflicts
             self.score+=1
-            self.state=['win']
+            self.state=['pause']
             self.state_change=1
     def opponent_win(self):
         if self.opponent.took=='took':
-            self.state=['win']
+            self.state=['pause']
             self.state_change=1
     def death(self):
         #resolve all conflicts first
-        self.state=['win']
+        self.state=['pause']
         self.state_change=1
     def opponent_death(self):
         self.score+=1
-        self.state=['win']
+        self.state=['pause']
         self.state_change=1
 
     def use_effect(self):
@@ -478,10 +466,10 @@ class TheGame():
         up,down,left,right='up','down','left','right'
         exec(self.opponent_effect)
         self.opponent_effect=''
-
+    """
     def rollback(self,effect):
         eval(effect)
-
+    """
     def legend(self):
         character_word=Goldie.render('Character',True,black)
         weapon_word=Goldie.render('Weapon',True,black)
@@ -492,9 +480,9 @@ class TheGame():
         pygame.draw.rect(self.overlay_fixed,(50,50,50,100),self.start_rect,border_radius=20)
         pygame.draw.rect(self.overlay_fixed,(0,0,0,100),self.start_rect,width=5,border_radius=20)
 
-    def set_opponent(self):
+    def set_opponent(self,message):
         represent={'M':'mine','B':'bomb','P1':'Captain','P2':'Spy','X1':'Captain','X2':'Spy'}
-        temp_message=self.client.authority_messages.pop(0)
+        temp_message=message
         HP=temp_message[3]
         temp_matrix=ast.literal_eval(temp_message[4:])
         for x,row in enumerate(temp_matrix):
@@ -504,6 +492,8 @@ class TheGame():
                     elif cell:
                         if cell[0] in ['X1','X2']:
                             self.opponent=Character(represent[cell[0]])
+                            self.opponent.direction='left'
+                            self.opponent.idle(change=True)
                             self.opponent.position=[y,x]
                             self.level.occupants[y][x]=[['block','X']]
                             self.opponent.animation.rect.center = ((self.level.x+y)*60+30,(self.level.y+x)*60-10)
@@ -520,4 +510,50 @@ class TheGame():
     def network_manage(self,message):
         ''' handling messages recieve in the run phase from the server
         '''
-        self.opponent_set_wait(message)
+        split= message.split(';')
+        code=split.pop(0)
+        if code=='make_opponent_move':
+            '''received when opponent move is allowed'''
+            frame_number=split.pop(0)
+            perform=str(';'.join([x for x in split if x != '']))
+            self.opponent_set_wait(perform)
+            '''make change to oswait as effect should be list'''
+        elif code=='set_matrix':
+            self.state[0]='receive_map'
+            self.set_opponent(split[0])
+            self.state_change=1
+        elif code=='request_frame':
+            self.client.sender(f'RR;{self.current_frame};self.fake_move()')
+        elif code=='KO':
+            self.state[0]='run_phase'
+            self.state_change=1
+        elif code=='OG':
+            self.state=['win']
+            self.state_change=1
+        elif code=='rollback':
+            print('Rollback Recv')
+            #self.rollback(message)
+
+    def rollback(self,message):
+        temp_player=ast.literal_eval(message)
+        matrix=temp_player['matrix']
+        for y, row in enumerate(matrix):
+            for x, cell in enumerate(row):
+                if cell == []:
+                    continue
+                else:
+                    if(cell[0] in ['M','B','CR','CB']):
+                        if not self.level.occupants[x][y][0][1].activated:
+                            self.level.occupants[x][y][0][1].activated = 1
+                            self.stills.append(self.level.occupants[x][y][0][1].image)
+                    elif(cell[-1] in ['P1','P2']):
+                        self.player.position=[x,y]
+                        self.player.image.rect.center=self.matrix[y][x].center
+                    elif(cell[-1] in ['X1','X2']):
+                        self.opponent.position=[x,y]
+                        self.opponent.image.rect.center=self.matrix[y][x].center
+
+#implement latency
+#complete implementation of rollback//reset
+#implement opponet effect as list
+#implemet start screen bar

@@ -59,16 +59,17 @@ def main():
                     Quit()             
             del events
 
-    #code start : below this line
 
+    #code start : below this line
+    #IP=menu()
+    #game  = TheGame(IP)
     game  = TheGame()
     client_thread=threading.Thread(target=game.client.connect)
     client_thread.start()
     #game.menu(display_surface)
     game.state_manager()
-
-    
     #code end : above this line
+
     while True:
         if game.state_change:
             game.state_change=0
@@ -88,6 +89,8 @@ def main():
             display_surface.blit(wait_word_3,wait_word_3.get_rect(center=button.center))
         elif game.state[0]=='run_phase':
             display_surface.blit(run_word,run_word.get_rect(center=button.center))
+        elif game.state[0]=='pause':
+            display_surface.blit(loading_word,loading_word.get_rect(center=button.center))
         pygame.display.update()
 
         #display_surface.blit(game.console,(0,0))
@@ -124,6 +127,7 @@ run_word=Chomsky.render('run',True,(200,10,10))
 wait_word_1=Chomsky.render('waiting.',True,(10,80,10))
 wait_word_2=Chomsky.render('waiting..',True,(10,80,10))
 wait_word_3=Chomsky.render('waiting...',True,(10,80,10))
+loading_word=Chomsky.render('Loading...',True,(10,80,10))
 #experimental code end.
 
 if __name__ == '__main__':
