@@ -530,13 +530,14 @@ class TheGame():
             self.client.sender(f'RR;{self.current_frame};self.fake_move()')
         elif code=='KO':
             self.state[0]='run_phase'
+            self.current_frame=0
             self.state_change=1
         elif code=='OG':
             self.state=['win']
             self.state_change=1
         elif code=='rollback':
             print('Rollback Recv')
-            #self.rollback(message)
+            self.rollback(message)
 
     def rollback(self,message):
         temp_player=ast.literal_eval(message)
