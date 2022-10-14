@@ -112,6 +112,8 @@ class TheGame():
                         self.opponent.wait-=1
                         if self.opponent.wait==0:
                             self.opponent_use_effect()
+            if self.state[0]=='pause':
+                self.current_frame+=1
            
             if self.client.authority_advance:
                     message=self.client.authority_messages.pop(0)
@@ -537,26 +539,30 @@ class TheGame():
             self.state_change=1
         elif code=='rollback':
             print('Rollback Recv')
-            self.rollback(message)
+            self.rollback(split[0])
 
-    def rollback(self,message):
-        temp_player=ast.literal_eval(message)
+    def rollback(self,split):
+        temp_player=ast.literal_eval(split)
         matrix=temp_player['matrix']
         for y, row in enumerate(matrix):
             for x, cell in enumerate(row):
                 if cell == []:
+                    self.level.occupants[x][y]=[]
                     continue
+
                 else:
                     if(cell[0] in ['M','B','CR','CB']):
                         if not self.level.occupants[x][y][0][1].activated:
                             self.level.occupants[x][y][0][1].activated = 1
                             self.stills.append(self.level.occupants[x][y][0][1].image)
-                    elif(cell[-1] in ['P1','P2']):
+                    if(cell[-1] in ['P1','P2']):
                         self.player.position=[x,y]
                         self.player.image.rect.center=self.matrix[y][x].center
-                    elif(cell[-1] in ['X1','X2']):
+                        self.level.occupants[x][y].append([['block','P']])
+                    if(cell[-1] in ['X1','X2']):
                         self.opponent.position=[x,y]
                         self.opponent.image.rect.center=self.matrix[y][x].center
+                        self.level.occupants[x][y].append([['block','X']])
 
 #implement latency
 #complete implementation of rollback//reset
