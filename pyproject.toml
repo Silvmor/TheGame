@@ -1,0 +1,20 @@
+[project]
+name = "TheGame_COP"
+version = "0.0.1"
+authors = [
+  { name="Divyanka Chaudhari", email="divyanka@example.com" },
+  { name="Omkar Shitole", email="omkar@example.com" },
+  { name="Ranjan Singh", email="ranjan@example.com" },
+]
+description = "Game Package"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Silvmor/TheGame"
+"Bug Tracker" = "https://github.com/Silvmor/TheGame/issues"
