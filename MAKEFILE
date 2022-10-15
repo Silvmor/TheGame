@@ -1,0 +1,11 @@
+server:
+	python3 src/TheGame/Server.py
+
+client:
+	python3 src/TheGame/clients.py
+
+clean:
+	rm -rf __pycache__
+
+tests:
+	python3 -m unittest discover -s tests

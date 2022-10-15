@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "TheGame_COP"
 version = "0.0.1"
@@ -14,7 +18,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
+dependencies = [
+    "pygame>=2.1.0"
+]
 [project.urls]
 "Homepage" = "https://github.com/Silvmor/TheGame"
 "Bug Tracker" = "https://github.com/Silvmor/TheGame/issues"
