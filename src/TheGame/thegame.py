@@ -818,8 +818,8 @@ class TheGame:
         temp_player = ast.literal_eval(split[0])
         matrix = temp_player["matrix"]
         self.player.HP=int(temp_player["HP"])
-        self.opponent.HP=int(temp_player["opponent_took"])
-        self.player.took=int(temp_player["HP"])
+        self.opponent.HP=int(temp_player["opponent_HP"])
+        self.player.took=int(temp_player["took"])
         self.opponent.took=int(temp_player["opponent_took"])
         print("Before : ")
         self.print_lo()
