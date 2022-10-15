@@ -18,7 +18,7 @@ class Game_World:
             raise Exception("Conflict for same position.")
             return
         temp = self.data["matrix"][self.data["player"][1]][self.data["player"][0]].pop()
-        self.data["player"] = [x, y]
+        self.data["player"] = [x,y]
         self.data["matrix"][self.data["player"][1]][self.data["player"][0]].append(temp)
 
     def remove(self):

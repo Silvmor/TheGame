@@ -770,13 +770,17 @@ class TheGame:
         self.current_frame = frame_number
         temp_player = ast.literal_eval(split[0])
         matrix = temp_player["matrix"]
+        print("Before : ")
+        self.print_lo()
         for row in self.level.occupants:
             for cell in row:
                 if ["Bolck", "P"] in cell:
                     cell.remove(["Bolck", "P"])
                 if ["Bolck", "X"] in cell:
                     cell.remove(["Bolck", "X"])
-        for y, row in enumerate(matrix):
+        print("Remove Player : ")
+        self.print_lo()
+        for y, row in enumerate(matrix):    
             for x, cell in enumerate(row):
                 if cell == []:
                     self.level.occupants[x][y] = []
@@ -792,13 +796,23 @@ class TheGame:
                                 )
                     if cell[-1] in ["P1", "P2"]:
                         self.player.position = [x, y]
-                        self.player.animation.rect.center = self.matrix[y][x].center
+                        self.player.animation.rect.center = (self.matrix[y][x].center[0],self.matrix[y][x].center[1]-10)
                         self.level.occupants[x][y].append(["block", "P"])
                     if cell[-1] in ["X1", "X2"]:
                         self.opponent.position = [x, y]
-                        self.opponent.animation.rect.center = self.matrix[y][x].center
+                        self.opponent.animation.rect.center = (self.matrix[y][x].center[0],self.matrix[y][x].center[1]-10)
                         self.level.occupants[x][y].append(["block", "X"])
-        print(self.level.occupants)
+        print("After : ")
+        self.print_lo()
+        self.state[0]='run_phase'
+
+    def print_lo(self):
+        for i in range(self.level.h):
+            for j in range(self.level.w):
+                print(self.level.occupants[j][i],end='##')
+            print('\n')
+
+
 
 
 # implement latency
