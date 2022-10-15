@@ -126,6 +126,17 @@ class TheGame:
 
             for image in self.stills:
                 image.draw(surface)
+            surface.blit(
+                Courier.render("Wins    : " + str(self.score), True, black), (30, 960)
+            )
+            T_sec=int(self.current_frame/60)
+            T_min=int(T_sec/60)
+            T_hrs=int(T_min/60)
+
+            surface.blit(
+                Courier.render(f"Time    : {T_hrs}::{T_min:02d}::{T_sec:02d}", True, black),
+                (1430, 960),
+            )
             if self.explosions != []:
                 fake_exp = self.explosions.copy()
                 for i in fake_exp:
@@ -175,13 +186,6 @@ class TheGame:
                 self.network_manage(message)
                 if self.client.authority_messages == []:
                     self.client.authority_advance = 0
-            surface.blit(
-                Courier.render("Wins    : " + str(self.score), True, black), (30, 960)
-            )
-            surface.blit(
-                Courier.render("Frame   : " + str(self.current_frame), True, black),
-                (1430, 960),
-            )
             for i, col in enumerate(self.level.occupants):
                 for j, cell in enumerate(col):
                     if cell == []:
