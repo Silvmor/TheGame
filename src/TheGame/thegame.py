@@ -711,11 +711,6 @@ class TheGame:
         exec(self.opponent_effect)
         self.opponent_effect = ""
 
-    """
-    def rollback(self,effect):
-        eval(effect)
-    """
-
     def legend(self):
         '''Displays the legend'''
         character_word = Goldie.render("Character", True, black)
@@ -837,11 +832,12 @@ class TheGame:
                                 )
                     if cell[-1] in ["P1", "P2"]:
                         self.player.position = [x, y]
-                        self.player.animation.rect.center = (self.matrix[y][x].center[0],self.matrix[y][x].center[1]-10)
+                        self.player.animation.rect.center = ((self.level.x + x) * 60 + 30,(self.level.y + y) * 60 - 10)
                         self.level.occupants[x][y].append(["block", "P"])
                     if cell[-1] in ["X1", "X2"]:
                         self.opponent.position = [x, y]
-                        self.opponent.animation.rect.center = (self.matrix[y][x].center[0],self.matrix[y][x].center[1]-10)
+                        self.opponent.animation.rect.center = ((self.level.x + to_y) * 60 + 30,(self.level.y + to_x) * 60 - 10)
+
                         self.level.occupants[x][y].append(["block", "X"])
         print("After : ")
         self.print_lo()
@@ -853,11 +849,3 @@ class TheGame:
             for j in range(self.level.w):
                 print(self.level.occupants[j][i],end='##')
             print('\n')
-
-
-
-
-# implement latency
-# complete implementation of rollback//reset
-# implement opponet effect as list
-# implemet start screen bar
