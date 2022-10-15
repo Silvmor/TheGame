@@ -491,7 +491,8 @@ class TheGame:
     def opponent_set_wait(self):
         if self.opponent.wait != 0 or self.opponent_buffer == []:
             return
-        msg = self.opponent_buffer.pop(0)
+        received_move =self.opponent_buffer.pop(0)
+        msg,frame_number = received_move[0],received_move[1]
         swap = {"up": "down", "down": "up", "left": "right", "right": "left"}
         up, down, left, right = "up", "down", "left", "right"
         split = msg.split(";")
@@ -501,7 +502,11 @@ class TheGame:
             self.opponent.idle(change=True)
         else:
             self.opponent.idle()
-        self.opponent.wait = 60
+        delta = self.current_frame - frame_number
+        if delta > 60 or delta <0:
+            self.opponent.wait=1
+        else:
+            self.opponent.wait = delta
         self.opponent.state = "walk"
 
         new_x = self.level.w - x - 1
@@ -733,7 +738,7 @@ class TheGame:
             """received when opponent move is allowed"""
             frame_number = split.pop(0)
             perform = str(";".join([x for x in split if x != ""]))
-            self.opponent_buffer.append(perform)
+            self.opponent_buffer.append([perform,int(frame_number)])
             self.opponent_set_wait()
             """make change to oswait as effect should be list"""
         elif code == "set_matrix":
