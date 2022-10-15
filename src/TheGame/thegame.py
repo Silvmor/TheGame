@@ -40,6 +40,7 @@ class TheGame:
         self.effect = ""
         self.score = 0
         self.current_frame = 0
+        self.credit_count=0
         self.last_update = 0
         self.explosions = []
         self.client = Client(IP)
@@ -80,6 +81,7 @@ class TheGame:
             self.opponent = None
             self.state_change = 1
             self.DJ.play_transition()
+            self.DJ.stop_Run()
 
     def game_update(self, surface):
         '''Updates the game according to its state'''
@@ -203,6 +205,15 @@ class TheGame:
                         Courier.render(str(temp), True, black),
                         (100 + 50 * i, 100 + 50 * j),
                     )
+        
+        elif self.state[0] == "credits":
+            credit = pygame.image.load('assets/0x464F5220444F45').convert_alpha()
+            while self.credit_count<1870:
+                surface.fill(white)
+                self.credit_count+=1
+                surface.blit(credit,(0,-self.credit_count))
+                pygame.display.update()
+            surface.blit(credit,(0,-1870))
 
     # initial phase
 
@@ -806,14 +817,18 @@ class TheGame:
         self.current_frame = frame_number
         temp_player = ast.literal_eval(split[0])
         matrix = temp_player["matrix"]
+        self.player.HP=int(temp_player["HP"])
+        self.opponent.HP=int(temp_player["opponent_took"])
+        self.player.took=int(temp_player["HP"])
+        self.opponent.took=int(temp_player["opponent_took"])
         print("Before : ")
         self.print_lo()
         for row in self.level.occupants:
             for cell in row:
-                if ["Bolck", "P"] in cell:
-                    cell.remove(["Bolck", "P"])
-                if ["Bolck", "X"] in cell:
-                    cell.remove(["Bolck", "X"])
+                if ["block", "P"] in cell:
+                    cell.remove(["block", "P"])
+                if ["block", "X"] in cell:
+                    cell.remove(["block", "X"])
         print("Remove Player : ")
         self.print_lo()
         for y, row in enumerate(matrix):    
@@ -821,7 +836,6 @@ class TheGame:
                 if cell == []:
                     self.level.occupants[x][y] = []
                     continue
-
                 else:
                     if cell[0] in ["M", "B", "CR", "CB"]:
                         if not self.level.occupants[x][y][0][1].activated:
@@ -836,7 +850,7 @@ class TheGame:
                         self.level.occupants[x][y].append(["block", "P"])
                     if cell[-1] in ["X1", "X2"]:
                         self.opponent.position = [x, y]
-                        self.opponent.animation.rect.center = ((self.level.x + to_y) * 60 + 30,(self.level.y + to_x) * 60 - 10)
+                        self.opponent.animation.rect.center = ((self.level.x + x) * 60 + 30,(self.level.y + y) * 60 - 10)
 
                         self.level.occupants[x][y].append(["block", "X"])
         print("After : ")

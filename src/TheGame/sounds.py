@@ -26,3 +26,6 @@ class Sound:
 
     def play_Run(self):
         mixer.Channel(1).play(mixer.Sound("sounds/Run.mp3"))
+
+    def stop_Run(self):
+        mixer.Channel(1).stop()
