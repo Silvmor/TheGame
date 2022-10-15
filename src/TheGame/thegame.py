@@ -821,10 +821,10 @@ class TheGame:
         self.print_lo()
         for row in self.level.occupants:
             for cell in row:
-                if ["Bolck", "P"] in cell:
-                    cell.remove(["Bolck", "P"])
-                if ["Bolck", "X"] in cell:
-                    cell.remove(["Bolck", "X"])
+                if ["block", "P"] in cell:
+                    cell.remove(["block", "P"])
+                if ["block", "X"] in cell:
+                    cell.remove(["block", "X"])
         print("Remove Player : ")
         self.print_lo()
         for y, row in enumerate(matrix):    
