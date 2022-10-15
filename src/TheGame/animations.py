@@ -5,6 +5,7 @@ import os
 
 
 class Animation(pygame.sprite.Sprite):
+    '''Class for animating characters'''
 
     def __init__(self, path):
         super().__init__()
@@ -23,6 +24,7 @@ class Animation(pygame.sprite.Sprite):
         self.rect.topleft = (0, 0)
 
     def update(self, speed):
+        '''Updates the animation if play_animation is True'''
         if self.play_animation == True:
             self.current_sprite += speed
             if int(self.current_sprite) >= len(self.sprites):
@@ -30,10 +32,12 @@ class Animation(pygame.sprite.Sprite):
         self.image = self.sprites[int(self.current_sprite)]
 
     def fade(self, alpha):
+        '''Fades the animation'''
         for sprite in self.sprites:
             sprite.set_alpha(sprite.get_alpha() - alpha)
 
     def resize(self, width, height):
+        '''Resizes the animation'''
         (x, y) = self.rect.center
         self.sprites = self.original.copy()
         for slide in range(len(self.sprites)):
@@ -45,6 +49,7 @@ class Animation(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def zoom(self, fact=1):
+        '''Zooms the animation'''
         (x, y) = self.rect.center
         (width, height) = (int(self.rect.width * fact),
                            int(self.rect.height * fact))
@@ -74,6 +79,7 @@ class Still(pygame.sprite.Sprite):
         fact=None,
         wrt='TL',
         ):
+        '''Places the still character on the screen'''
         if fact:
             (width, height) = (int(self.rect.width * fact),
                                int(self.rect.height * fact))
@@ -89,14 +95,17 @@ class Still(pygame.sprite.Sprite):
             self.rect.topleft = [pos_x, pos_y]
 
     def fade(self, alpha):
+        '''Fades the still animation'''
         self.image.set_alpha(alpha)
 
     def resize(self, width, height):
+        '''Resizes the still animation'''
         self.image = pygame.transform.smoothscale(self.image, (width,
                 height))
         self.rect = self.image.get_rect()
 
     def zoom(self, fact=1):
+        '''Zooms the still animation'''
         (x, y) = self.rect.center
         (width, height) = (int(self.rect.width * fact),
                            int(self.rect.height * fact))
@@ -106,4 +115,5 @@ class Still(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def draw(self, surface):
+        '''Draws the still animation'''
         surface.blit(self.image, self.rect)

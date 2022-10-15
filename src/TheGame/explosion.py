@@ -3,6 +3,7 @@ import os
 
 
 class Explosion:
+    '''Class that animates the explosion when a character steps on weapon'''
     def __init__(self):
         self.original = []
         num = 0
@@ -23,6 +24,7 @@ class Explosion:
         self.zoom(0.5)
 
     def zoom(self, fact=1):
+        '''Zooms the explosion'''
         (x, y) = self.rect.center
         width, height = int(self.rect.width * fact), int(self.rect.height * fact)
         self.sprites = self.original.copy()
@@ -35,6 +37,7 @@ class Explosion:
         self.rect.center = (x, y)
 
     def explode(self):
+        '''Animates the explosion'''
         self.current_sprite += 0.2
         if int(self.current_sprite) >= len(self.sprites):
             self.current_sprite = 0

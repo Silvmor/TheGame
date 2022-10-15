@@ -31,7 +31,7 @@ class Character:
         speed=0.3,
         displace=1,
         ):
-
+        '''Walks the character'''
         # do something with move here self.direction=[0,0]
 
         move = {
@@ -51,6 +51,7 @@ class Character:
                 * displace)
 
     def idle(self, change=False):
+        '''Makes the character idle'''
         if change:
             if self.direction == 'up':
                 self.animation.current_sprite = 1
@@ -71,7 +72,9 @@ class Character:
         self.animation.update(0.2)
 
     def Captain(self):
+        '''Makes the character Captain'''
         self.HP = 4
 
     def Spy(self):
+        '''Makes the character Spy'''
         self.reveals = 4
