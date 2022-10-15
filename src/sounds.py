@@ -10,7 +10,7 @@ class Sound:
         Replay = USEREVENT
         mixer.Channel(0).play(BG_music, loops=-1)
         mixer.Channel(1).set_endevent(Replay)
-        self.play_Run()
+        #self.play_Run()
 
     def play_blast(self):
         mixer.music.load("sounds/blast.mp3")

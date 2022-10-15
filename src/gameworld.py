@@ -14,7 +14,7 @@ class Game_World:
         }
 
     def move(self, x, y, entry):
-        if self.data["opponent"] == [self.w - x - 1, self.h - y - 1]:
+        if self.data["opponent"] == [x,y]:
             raise Exception("Conflict for same position.")
             return
         temp = self.data["matrix"][self.data["player"][1]][self.data["player"][0]].pop()
@@ -31,7 +31,7 @@ class Game_World:
         self.data["HP"] -= amount
 
     def opponent_move(self, x, y, entry):
-        if self.data["player"] == [x, y]:
+        if self.data["player"] == [self.w - x - 1, self.h - y - 1]:
             raise Exception("Conflict for same position.")
             return
         temp = self.data["matrix"][self.data["opponent"][1]][
