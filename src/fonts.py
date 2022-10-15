@@ -18,4 +18,3 @@ Courier         = pygame.font.Font("assets/Fonts/Courier.ttf",20)
 Courier_small   = pygame.font.Font("assets/Fonts/Courier.ttf",15)
 Courier_xsmall   = pygame.font.Font("assets/Fonts/Courier.ttf",10)
 Courier_big     = pygame.font.Font("assets/Fonts/Courier.ttf",40)
-
