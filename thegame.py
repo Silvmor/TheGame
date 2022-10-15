@@ -11,6 +11,7 @@ import ast
 import threading
 import sys
 from gameworld import Game_World
+from sounds import Sound
 
 
 class TheGame():
@@ -42,16 +43,19 @@ class TheGame():
         self.last_update=0
         self.explosions=[]
         self.client =Client(IP)
-        #self.game_world=Game_World()
+        self.DJ=Sound()
+        
 
 
     def state_manager(self):
         if self.state[0]=='run_phase':
-            self.state_change=0
+            self.DJ.play_Run()
+            pass
         elif self.state[0]=='character_choose':
-                self.character_choose()
                 self.state=['object_place','free']
+                self.character_choose()
                 self.level = Level()
+                self.game_world=Game_World('Z',self.level.w,self.level.h)
                 self.state_change=1
         elif self.state[0]=='object_place':
             self.set_matrix()
@@ -76,6 +80,7 @@ class TheGame():
             self.player=None
             self.opponent=None 
             self.state_change=1
+            self.DJ.play_transition()
 
     def game_update(self,surface):
         if self.state[0] in ['object_place','send_map','ready','run_phase','pause']:
@@ -93,13 +98,6 @@ class TheGame():
                         self.draw_select(surface,(100,0,0,255),cell,0)
             if self.state[0]=='run_phase':
                 self.current_frame+=1
-                if self.explosions!=[]:
-                    fake_exp=self.explosions.copy()
-                    for i in fake_exp:
-                        i.explode()
-                        surface.blit(i.image,i.rect)
-                        if i.current_sprite==0:
-                            self.explosions.remove(i)
                 if self.player.state=='walk':
                     if self.player.wait>0:
                         self.player.walk()
@@ -113,9 +111,9 @@ class TheGame():
                         self.opponent.wait-=1
                         if self.opponent.wait==0:
                             self.opponent_use_effect()
+                            self.opponent_set_wait()   
             if self.state[0]=='pause':
                 self.current_frame+=1
-           
             if self.client.authority_advance:
                     message=self.client.authority_messages.pop(0)
                     self.network_manage(message)
@@ -124,7 +122,13 @@ class TheGame():
 
             for image in self.stills:
                 image.draw(surface)
-            surface.blit(Courier.render('Wins    : '+str(self.score),True,black),(30,960))
+            if self.explosions!=[]:
+                fake_exp=self.explosions.copy()
+                for i in fake_exp:
+                    i.explode()
+                    surface.blit(i.image,i.rect)
+                    if i.current_sprite==0:
+                        self.explosions.remove(i)
             if self.player:
                 self.player.SG.draw(surface)
                 surface.blit(Courier.render('Hp      : '+str(self.player.HP),True,black),(30,990))
@@ -135,6 +139,30 @@ class TheGame():
                 surface.blit(Courier.render('Hp      : '+str(self.opponent.HP),True,black),(1430,990))
                 surface.blit(Courier.render('Reveals : '+str(self.opponent.reveals),True,black),(1430,1020))
                 surface.blit(Courier.render('Position: '+str(self.opponent.position),True,black),(1430,1050))
+        elif self.state[0]=="Halt":
+            if self.client.authority_advance:
+                message=self.client.authority_messages.pop(0)
+                self.network_manage(message)
+                if self.client.authority_messages==[]:
+                    self.client.authority_advance=0
+            surface.blit(Courier.render('Wins    : '+str(self.score),True,black),(30,960))
+            surface.blit(Courier.render('Frame   : '+str(self.current_frame),True,black),(1430,960))
+            for i,col in enumerate(self.level.occupants):
+                for j,cell in enumerate(col):
+                    if cell==[]:
+                        temp=[]
+                    elif cell[0][0]=='block':
+                        temp=cell[0][1]
+                    elif cell[0][0]=='weapon':
+                        temp=cell[0][1].id
+                        temp=str(temp)+str(cell[0][1].activated)
+                        if len(cell)>1:
+                            temp=temp+cell[1][1]
+                    surface.blit(Courier.render(str(temp),True,black),(100+50*i,100+50*j))
+
+
+
+
 
     #initial phase
 
@@ -182,6 +210,12 @@ class TheGame():
             cell=self.character_pos[index][0]
             temp.place(cell.center[0],cell.center[1]-10,wrt='c')
             temp.draw(self.overlay_fixed)
+            if character.HP<=0:
+                No=Still('assets/NO.png')
+                #No.resize(70,70)
+                No.place(cell.center[0],cell.center[1],wrt='c')
+                No.draw(self.overlay_fixed)
+
 
     def weapon_assign(self):
         #to be chnged to support numbers
@@ -345,6 +379,8 @@ class TheGame():
             self.player.wait=0
             self.player.state='idle'
     def opponent_set_wait(self):
+        if self.opponent.wait!=0 or self.opponent_buffer==[]:
+            return
         msg=self.opponent_buffer.pop(0)
         swap={'up':'down','down':'up','left':'right','right':'left'}
         up,down,left,right='up','down','left','right'
@@ -410,11 +446,13 @@ class TheGame():
         self.level.occupants[x][y].append(['block','X'])
         self.opponent.position=[x,y]
         self.opponent.animation.rect.center = ((self.level.x+x)*60+30,(self.level.y+y)*60-10)
+
     def take_damage(self,amount):
         self.player.HP-=amount
         temp=self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].expl.rect.center=self.matrix[self.player.position[1]][self.player.position[0]].center
         self.explosions.append(temp[1].expl)
+        self.DJ.play_blast()
         #could be in negative
         if self.player.HP<=0:
             self.death()
@@ -499,6 +537,7 @@ class TheGame():
         temp_message=message
         HP=temp_message[3]
         temp_matrix=ast.literal_eval(temp_message[4:])
+        self.game_world.data['matrix']=temp_matrix
         for x,row in enumerate(temp_matrix):
                 for y,cell in enumerate(row):
                     if y<self.level.w/2:
@@ -548,10 +587,12 @@ class TheGame():
             self.state_change=1
         elif code=='rollback':
             print('Rollback Recv')
-            self.rollback(split[0])
+            self.rollback(split)
 
     def rollback(self,split):
-        temp_player=ast.literal_eval(split)
+        frame_number=int(split.pop(0))
+        self.current_frame=frame_number
+        temp_player=ast.literal_eval(split[0])
         matrix=temp_player['matrix']
         for row in self.level.occupants:
             for cell in row:
@@ -573,12 +614,13 @@ class TheGame():
                                 self.stills.append(self.level.occupants[x][y][0][1].image)
                     if(cell[-1] in ['P1','P2']):
                         self.player.position=[x,y]
-                        self.player.animation.image.rect.center=self.matrix[y][x].center
-                        self.level.occupants[x][y].append([['block','P']])
+                        self.player.animation.rect.center=self.matrix[y][x].center
+                        self.level.occupants[x][y].append(['block','P'])
                     if(cell[-1] in ['X1','X2']):
                         self.opponent.position=[x,y]
-                        self.opponent.animation.image.rect.center=self.matrix[y][x].center
-                        self.level.occupants[x][y].append([['block','X']])
+                        self.opponent.animation.rect.center=self.matrix[y][x].center
+                        self.level.occupants[x][y].append(['block','X'])
+        print(self.level.occupants)
 
 #implement latency
 #complete implementation of rollback//reset

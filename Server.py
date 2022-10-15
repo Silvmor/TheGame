@@ -132,14 +132,14 @@ def check_move(ID):
             if validate(temp_moves.pop(0),temp_player):
                 forward(messageCache[ID].pop(0),ID)
             else:
+                rollback(messageCache[ID].pop(0),ID)
                 messageCache[ID].clear()
-                rollback(ID)
         elif int(messageCache[ID][0][0])>int(messageCache[not ID][0][0]):
             if validate(temp_opponent_moves.pop(0),temp_player):
                 forward(messageCache[not ID].pop(0),not ID)
             else:
+                rollback(messageCache[not ID].pop(0),not ID)
                 messageCache[not ID].clear()
-                rollback(not ID)
                 
     while messageCache[ID]:
         if messageCache[ID][0][1]=='self.fake_move()':
@@ -198,8 +198,9 @@ def forward(message ,ID):
         RML("Error_forwarding_empty")
     print('forward_End :')
 
-def rollback(ID):
-    sender('rollback;'+str(players[ID].data),connections[ID],ID)
+def rollback(split,ID):
+    frame_number=split[0]
+    sender(f'rollback;{frame_number};'+str(players[ID].data),connections[ID],ID)
 '''END'''
 
 

@@ -59,7 +59,10 @@ def main():
                     elif event.unicode in inputs:
                         game.input_receive(inputs[event.unicode],'walk')
                     elif event.unicode=='p':
-                       game.level.next()
+                        if game.state[0]=='Halt':
+                            game.state[0]='run_phase'
+                        elif game.state[0]=='run_phase':
+                            game.state[0]='Halt'
                 elif event.type == pygame.KEYUP:
                     if event.unicode in inputs:
                         game.input_receive(inputs[event.unicode],'remove')
