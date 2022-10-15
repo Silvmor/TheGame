@@ -507,10 +507,13 @@ class TheGame:
         else:
             self.opponent.idle()
         delta = self.current_frame - frame_number
+        '''
         if delta > 60 or delta <0:
             self.opponent.wait=1
         else:
             self.opponent.wait = delta
+        '''
+        self.opponent.wait=60
         self.opponent.state = "walk"
 
         new_x = self.level.w - x - 1
