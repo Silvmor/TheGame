@@ -34,6 +34,7 @@ hat_directions = {
 
 
 def menu():
+    '''Displays menu screen'''
     user_text = ""
     while True:
         display_surface.fill(white)
@@ -60,6 +61,7 @@ def menu():
 
 def main():
     def Event_handler():
+        '''Handles events of button presses and inputs'''
         events = pygame.event.get()
         if events:
             for event in events:

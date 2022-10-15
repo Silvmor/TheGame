@@ -23,6 +23,7 @@ pygame.display.set_caption("Server")
 
 
 def accept_connections():
+    '''accepts connections and creates threads for them'''
     global index, threads, running
     index = 0
     while index < 2:
@@ -38,6 +39,7 @@ def accept_connections():
 
 
 def connection(sock, ID):
+    '''handles the connection of a client'''
     global running
     sock.setblocking(False)
     receiver_thread = threading.Thread(target=receiver, args=(sock, ID))
@@ -47,6 +49,7 @@ def connection(sock, ID):
 
 
 def sender(msg, sock, ID):
+    '''sends a message to a client'''
     totalsent = 0
     while totalsent < len(msg):
         sent = sock.send(msg[totalsent:].encode())
@@ -57,6 +60,7 @@ def sender(msg, sock, ID):
 
 
 def receiver(sock, ID):
+    '''receives messages from a client'''
     result = []
     msg_sofar = ""
     semaphor =0
@@ -89,6 +93,7 @@ def receiver(sock, ID):
 
 
 def authority(message, sock, ID):
+    '''checks if the message is valid and then performs it'''
     global State_ADVANCE, mess
     RML(f"Client_{ID} : {message}")
     split = message.split(";")
@@ -126,6 +131,7 @@ messageCache = [[], []]
 
 
 def check(ID):
+    '''checks if the message is valid and then performs it'''
     global under_checking
     RML(f"\n{ID}_myCache : {messageCache[ID]}")
     RML(f"{ID}_opCache : {messageCache[not ID]}")
@@ -136,6 +142,7 @@ def check(ID):
 
 
 def check_move(ID):
+    '''checks if the message is valid and then performs it'''
     global under_checking
     under_checking = 1
     """perform all moves in cache until not possible then done"""
@@ -185,6 +192,7 @@ def check_move(ID):
 
 
 def validate(effects, temp_player):
+    '''checks if the message is valid and then performs it'''
     up, down, left, right = "up", "down", "left", "right"
     for effect in effects:
         try:
@@ -199,6 +207,7 @@ def validate(effects, temp_player):
 
 
 def forward(message, ID):
+    '''checks if the message is valid and then performs it'''
     """ message = [frame_no, self.move(x,y,direction), ... self.effects ...]"""
     print("forward_start :")
     global player_0, player_1, players
@@ -251,6 +260,7 @@ def rollback(split, ID):
 
 
 def set_player(ID):
+    '''sets the player data'''
     for y, row in enumerate(players[ID].data["matrix"]):
         for x, cell in enumerate(row):
             if cell != []:
@@ -260,6 +270,7 @@ def set_player(ID):
 
 
 def set_opponents():
+    '''sets the opponent player's data'''
     global w, h
     for y, row in enumerate(players[1].data["matrix"]):
         for x, cell in enumerate(row):
@@ -295,6 +306,7 @@ def set_opponents():
 
 
 def update(sock, ID):
+    '''updates the players' data'''
     global State_ADVANCE
     if State_ADVANCE == [1, 1] or (
         State_ADVANCE[not ID] == 2 and State_ADVANCE[ID] == 1

@@ -2,7 +2,7 @@ import unittest
 # import sys
 # sys.path.append('.')
 
-from ..src.explosion import Explosion as ExplosionClass
+from .. import src.TheGame.explosion.Explosion as ExplosionClass
 
 ani = ExplosionClass()
 

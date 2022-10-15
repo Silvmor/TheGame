@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: TheGame
+Version: 0.0.1
+Summary: Game Package
+Author-email: Divyanka Chaudhari <divyanka@example.com>, Omkar Shitole <omkar@example.com>, Ranjan Singh <ranjan@example.com>
+Project-URL: Homepage, https://github.com/Silvmor/TheGame
+Project-URL: Bug Tracker, https://github.com/Silvmor/TheGame/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# README file (to be edited)

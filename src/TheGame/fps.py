@@ -5,6 +5,7 @@ from fonts import *
 
 
 class FPS:
+    '''Class to calculate and show FPS at top left of the screen'''
     def __init__(self):
         self.FC = 60
         self.FPS = 60
@@ -17,6 +18,7 @@ class FPS:
         self.rect.topleft = [0, 0]
 
     def show(self, surface):
+        '''Shows the FPS'''
         if self.FC == 0:
             self.FC = 60
             self.current_time = datetime.now()

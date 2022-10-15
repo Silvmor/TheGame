@@ -13,14 +13,17 @@ class Client:
         self.busy = 0
 
     def connect(self):
+        '''This function is used to connect to the server'''
         self.sock.setblocking(False)
         self.receiver()
 
     def connection_close(self, ID):
+        '''This function is used to close the connection'''
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
 
     def sender(self, msg):
+        '''This function is used to send messages to the server'''
         self.busy = 1
         print(f"Client Sent : {msg}")
         msg = msg + "$"
@@ -33,6 +36,7 @@ class Client:
         self.busy = 0
 
     def receiver(self):
+        '''This function is used to receive messages from the server'''
         chunks = []
         while True:
             try:
@@ -48,6 +52,7 @@ class Client:
             chunks.append(chunk)
 
     def authority(self, result):
+        '''This function is used to process the messages received from the server'''
         self.authority_messages.append(result)
         self.authority_advance = 1
         print("Client Received :", result)

@@ -47,6 +47,7 @@ class TheGame:
         self.DJ = Sound()
 
     def state_manager(self):
+        '''Handles different states of a character'''
         if self.state[0] == "run_phase":
             self.DJ.play_Run()
             pass
@@ -82,6 +83,7 @@ class TheGame:
             self.DJ.play_transition()
 
     def game_update(self, surface):
+        '''Updates the game according to its state'''
         if self.state[0] in ["object_place", "send_map", "ready", "run_phase", "pause"]:
             surface.blit(self.level.surface, (0, 0))
             if self.state[0] == "object_place":
@@ -215,6 +217,7 @@ class TheGame:
     # initial phase
 
     def character_choose(self):
+        '''Allows the player to choose a character'''
         # after finished
         self.characters = [
             Character("Captain"),
@@ -228,6 +231,7 @@ class TheGame:
     ##phase 'object_place'
     # 1.level initialize
     def set_matrix(self):
+        '''Sets the matrix of the level'''
         size = 60
         self.matrix.clear()
         x, y, w, h = self.level.x, self.level.y, self.level.w, self.level.h
@@ -245,6 +249,7 @@ class TheGame:
         self.map = [[[] for i in range(w)] for i in range(h)]
 
     def set_inventory(self):
+        '''Sets the inventory of the player'''
         self.character_pos.clear()
         self.weapon_pos.clear()
         for i in range(6):
@@ -284,6 +289,7 @@ class TheGame:
 
     # 2.level screen setup
     def character_assign(self):
+        '''Assigns the characters to the player'''
         for index, character in enumerate(self.characters):
             temp = Still("assets/character/" + character.name + ".png")
             temp.zoom(1.2)
@@ -297,6 +303,7 @@ class TheGame:
                 No.draw(self.overlay_fixed)
 
     def weapon_assign(self):
+        '''Assigns the weapons to the player'''
         # to be chnged to support numbers
         for index, name in enumerate(self.level.allowed_weapon):
             temp = Still("assets/Weapon/" + name + ".png")
@@ -307,6 +314,7 @@ class TheGame:
             self.weapons.append([name, self.level.weapon_counts[index]])
 
     def goal_set(self):
+        '''Sets the goal of the level'''
         temp = Weapon("crystal_blue")
         temp.image.rect.center = self.matrix[int(self.level.h / 2)][0].center
         self.stills.append(temp.image)
@@ -337,6 +345,7 @@ class TheGame:
 
     # 3.receive input
     def mouse_click(self):
+        '''Handles the mouse click event'''
         # code in character,initial phase
         if self.state[0] == "object_place":
             if self.start_rect.collidepoint(pygame.mouse.get_pos()):
@@ -407,6 +416,7 @@ class TheGame:
                             self.state = ["object_place", "free"]
 
     def mouse_check(self, matrix):
+        '''Checks if the mouse is on the matrix'''
         pos = pygame.mouse.get_pos()
         for i, row in enumerate(matrix):
             for j, cell in enumerate(row):
@@ -415,6 +425,7 @@ class TheGame:
         return None
 
     def draw_select(self, screen, color, rect, fill=1):
+        '''Draws the selection rectangle'''
         Surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
         if fill:
             pygame.draw.rect(
@@ -431,6 +442,7 @@ class TheGame:
 
     # 4.placement of objects
     def character_place(self, from_x, from_y, to_x, to_y):
+        '''Places the character on the map'''
         representation = {"Captain": "P1", "Spy": "P2"}
         if self.level.occupants[to_y][to_x] == []:
             if self.player:
@@ -448,6 +460,7 @@ class TheGame:
             )
 
     def weapon_place(self, from_x, from_y, to_x, to_y):
+        '''Places the weapon on the map'''
         if self.level.occupants[to_y][to_x] == []:
             temp = Weapon(self.weapons[from_x * 3 + from_y][0])
             self.level.weapon_counts[from_x * 3 + from_y] -= 1
@@ -465,6 +478,7 @@ class TheGame:
 
     # phase 'run phase'
     def input_receive(self, direction, state):
+        '''Receives the input from the player'''
         # code in run phase
         if self.state[0] == "run_phase":
             if direction != "yes" and direction != "no":
@@ -481,6 +495,7 @@ class TheGame:
                 pass
 
     def set_wait(self):
+        '''Sets the wait time for the player'''
         if self.buffer:
             while self.buffer:
                 entry = self.buffer[-1]
@@ -503,6 +518,7 @@ class TheGame:
             self.player.state = "idle"
 
     def opponent_set_wait(self):
+        '''Sets the wait time for the opponent'''
         if self.opponent.wait != 0 or self.opponent_buffer == []:
             return
         received_move =self.opponent_buffer.pop(0)
@@ -536,9 +552,11 @@ class TheGame:
         self.opponent_effect = effect
 
     def opponent_move(self, x, y, entry):
+        '''Moves the opponent'''
         return (x, y, entry)
 
     def validate_move(self, entry):
+        '''Validates the move'''
         move = {"up": [0, -1], "down": [0, 1], "left": [-1, 0], "right": [1, 0]}
         new_x = self.player.position[0] + move[entry][0]
         new_y = self.player.position[1] + move[entry][1]
@@ -566,6 +584,7 @@ class TheGame:
                     return 0
 
     def move(self, x, y, entry):
+        '''Moves the player'''
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(
             ["block", "P"]
         )
@@ -577,6 +596,7 @@ class TheGame:
         )
 
     def undo_move(self, x, y):
+        '''Undoes the move'''
         self.level.occupants[self.player.position[0]][self.player.position[1]].remove(
             ["block", "P"]
         )
@@ -584,6 +604,7 @@ class TheGame:
         self.player.position = [x, y]
 
     def do_opponent_move(self, x, y, entry):
+        '''Moves the opponent'''
         self.level.occupants[self.opponent.position[0]][
             self.opponent.position[1]
         ].remove(["block", "X"])
@@ -595,6 +616,7 @@ class TheGame:
         )
 
     def take_damage(self, amount):
+        '''Takes amount damage and modify player health'''
         self.player.HP -= amount
         temp = self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].expl.rect.center = self.matrix[self.player.position[1]][
@@ -607,9 +629,11 @@ class TheGame:
             self.death()
 
     def undo_take_damage(self, amount):
+        '''Undoes the damage and increases player health'''
         self.player.HP += amount
 
     def opponent_take_damage(self, amount):
+        '''Takes amount damage and modify opponent health'''
         self.opponent.HP -= amount
         temp = self.level.occupants[self.opponent.position[0]][
             self.opponent.position[1]
@@ -622,6 +646,7 @@ class TheGame:
             self.opponent_death()
 
     def remove(self):
+        '''Removes the block'''
         temp = self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].activated = 0
         try:
@@ -630,6 +655,7 @@ class TheGame:
             pass
 
     def opponent_remove(self):
+        '''Removes the block'''
         temp = self.level.occupants[self.opponent.position[0]][
             self.opponent.position[1]
         ][0]
@@ -640,20 +666,25 @@ class TheGame:
             pass
 
     def undo_remove(self):
+        '''Undoes the removal of the block'''
         temp = self.level.occupants[self.player.position[0]][self.player.position[1]][0]
         temp[1].activated = 1
         self.stills.append(temp[1].image)
 
     def took(self):
+        '''Player takes the crystal'''
         self.player.took = "took"
 
     def opponent_took(self):
+        '''Opponent takes the crystal'''
         self.opponent.took = "took"
 
     def undo_took(self):
+        '''Undoes the taking of the crystal'''
         self.player.took = "free"
 
     def win(self):
+        '''Player wins'''
         if self.player.took == "took":
             # here first resolve all conflicts
             self.score += 1
@@ -661,37 +692,44 @@ class TheGame:
             self.state_change = 1
 
     def opponent_win(self):
+        '''Opponent wins'''
         if self.opponent.took == "took":
             self.state = ["pause"]
             self.state_change = 1
 
     def death(self):
+        '''Player dies'''
         # resolve all conflicts first
         self.state = ["pause"]
         self.state_change = 1
 
     def opponent_death(self):
+        '''Opponent dies'''
         self.score += 1
         self.state = ["pause"]
         self.state_change = 1
 
     def use_effect(self):
+        '''Uses the effect of the block'''
         up, down, left, right = "up", "down", "left", "right"
         exec(self.effect)
         self.effect = ""
 
     def opponent_use_effect(self):
+        '''Uses the effect of the block'''
         up, down, left, right = "up", "down", "left", "right"
         exec(self.opponent_effect)
         self.opponent_effect = ""
 
     def legend(self):
+        '''Displays the legend'''
         character_word = Goldie.render("Character", True, black)
         weapon_word = Goldie.render("Weapon", True, black)
         self.overlay_fixed.blit(character_word, (60, 60))
         self.overlay_fixed.blit(weapon_word, (1590, 60))
 
     def start(self):
+        '''Starts the game'''
         self.start_rect = pygame.Rect(840, 960, 240, 90)
         pygame.draw.rect(
             self.overlay_fixed, (50, 50, 50, 100), self.start_rect, border_radius=20
@@ -705,6 +743,7 @@ class TheGame:
         )
 
     def set_opponent(self, message):
+        '''Sets the opponent'''
         represent = {
             "M": "mine",
             "B": "bomb",
@@ -743,6 +782,7 @@ class TheGame:
         self.client.sender("OK")
 
     def network_manage(self, message):
+        '''Manages the network'''
         """handling messages recieve in the run phase from the server"""
         split = message.split(";")
         code = split.pop(0)
@@ -771,6 +811,7 @@ class TheGame:
             self.rollback(split)
 
     def rollback(self, split):
+        '''Rolls back the game'''
         frame_number = int(split.pop(0))
         self.current_frame = frame_number
         temp_player = ast.literal_eval(split[0])
@@ -813,6 +854,7 @@ class TheGame:
         self.state[0]='run_phase'
 
     def print_lo(self):
+        '''Prints the level occupants'''
         for i in range(self.level.h):
             for j in range(self.level.w):
                 print(self.level.occupants[j][i],end='##')
