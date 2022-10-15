@@ -817,6 +817,10 @@ class TheGame:
         self.current_frame = frame_number
         temp_player = ast.literal_eval(split[0])
         matrix = temp_player["matrix"]
+        self.player.HP=int(temp_player["HP"])
+        self.opponent.HP=int(temp_player["opponent_took"])
+        self.player.took=int(temp_player["HP"])
+        self.opponent.took=int(temp_player["opponent_took"])
         print("Before : ")
         self.print_lo()
         for row in self.level.occupants:
@@ -832,7 +836,6 @@ class TheGame:
                 if cell == []:
                     self.level.occupants[x][y] = []
                     continue
-
                 else:
                     if cell[0] in ["M", "B", "CR", "CB"]:
                         if not self.level.occupants[x][y][0][1].activated:
