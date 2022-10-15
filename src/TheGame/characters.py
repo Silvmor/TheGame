@@ -3,6 +3,7 @@ from animations import Animation
 
 
 class Character:
+    '''Class for Characters in the game'''
 
     def __init__(self, name):
         represent = {'Captain': 'P1', 'Spy': 'P2'}
