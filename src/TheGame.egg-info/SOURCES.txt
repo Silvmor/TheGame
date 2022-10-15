@@ -4,6 +4,9 @@ LICENSE
 MAKEFILE
 README.md
 pyproject.toml
+dist/.DS_Store
+dist/TheGame-0.0.1-py3-none-any.whl
+dist/TheGame-0.0.1.tar.gz
 src/.DS_Store
 src/TheGame/.DS_Store
 src/TheGame/Server.py
@@ -31,6 +34,8 @@ src/TheGame/__pycache__/colors.cpython-310.pyc
 src/TheGame/__pycache__/fonts.cpython-310.pyc
 src/TheGame/__pycache__/fps.cpython-310.pyc
 src/TheGame/__pycache__/gameworld.cpython-310.pyc
+src/TheGame/assets/.DS_Store
+src/TheGame/assets/0x464F5220444F45
 src/TheGame/assets/NO.png
 src/TheGame/assets/S1.png
 src/TheGame/assets/S2.png
