@@ -57,22 +57,35 @@ def sender(msg, sock, ID):
 
 
 def receiver(sock, ID):
-    chunks = []
-    result = ""
+    result = []
+    msg_sofar = ""
+    semaphor =0
     while True:
         try:
-            chunk = sock.recv(1).decode("utf-8")
-            if chunk == "$":
-                raise Exception("One Doller Received")
-        except:
-            if chunks:
-                result = "".join(chunks)
-                authority(result, sock, ID)
-                chunks.clear()
+            chunk = sock.recv(64).decode("utf-8")
+            RML('Chunk : '+chunk)
+            while '$' in chunk:
+                index = chunk.find('$')
+                msg_sofar += chunk[:index]
+                result.append(msg_sofar)
+                semaphor+=1
+                msg_sofar=''
+                if(index == len(chunk)-1):
+                    chunk=''
+                    msg_sofar = ''
+                else:
+                    chunk = chunk[index+1:]
+                RML('Dollar Found : ')
+            msg_sofar += chunk
+        except Exception as e:
+            if str(e)[1:9]=='WinError':
+                pass
+            else:
+                RML(str(e))
+        while semaphor>0:
+            authority(result.pop(0), sock, ID)
+            semaphor-=1
             continue
-        if chunk == "":
-            raise RuntimeError("socket connection broken")
-        chunks.append(chunk)
 
 
 def authority(message, sock, ID):
