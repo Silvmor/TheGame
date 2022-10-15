@@ -40,6 +40,7 @@ class TheGame:
         self.effect = ""
         self.score = 0
         self.current_frame = 0
+        self.credit_count=0
         self.last_update = 0
         self.explosions = []
         self.client = Client(IP)
@@ -201,6 +202,15 @@ class TheGame:
                         Courier.render(str(temp), True, black),
                         (100 + 50 * i, 100 + 50 * j),
                     )
+        
+        elif self.state[0] == "credits":
+            credit = pygame.image.load('assets/0x464F5220444F45').convert_alpha()
+            while self.credit_count<1870:
+                surface.fill(white)
+                self.credit_count+=1
+                surface.blit(credit,(0,-self.credit_count))
+                pygame.display.update()
+            surface.blit(credit,(0,-1870))
 
     # initial phase
 
@@ -795,7 +805,7 @@ class TheGame:
                         self.level.occupants[x][y].append(["block", "P"])
                     if cell[-1] in ["X1", "X2"]:
                         self.opponent.position = [x, y]
-                        self.opponent.animation.rect.center = ((self.level.x + to_y) * 60 + 30,(self.level.y + to_x) * 60 - 10)
+                        self.opponent.animation.rect.center = ((self.level.x + x) * 60 + 30,(self.level.y + y) * 60 - 10)
 
                         self.level.occupants[x][y].append(["block", "X"])
         print("After : ")
