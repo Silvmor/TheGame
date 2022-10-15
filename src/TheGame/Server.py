@@ -495,13 +495,15 @@ def RML(text, fsize=25, font=NixieOne_small, color=(40, 0, 40, 255)):
 
 
 def next_level():
-    global server_1_pos, server_2_pos, w, h, level_number, players, player_0, player_1, on_hold
+    global server_1_pos, server_2_pos, w, h, level_number, players, player_0, player_1, on_hold,messageCache
     on_hold = 1
     if level_number == 5:
         level_number = 0
     level_size = [(10, 5), (12, 7), (16, 7), (18, 7), (18, 9)]
     w, h = level_size[level_number]
     players.clear()
+    messageCache.clear()
+    messageCache=[[],[]]
     players = [Game_World("A", w, h), Game_World("B", w, h)]
     server_1_pos.clear()
     server_2_pos.clear()

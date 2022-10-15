@@ -81,6 +81,7 @@ class TheGame:
             self.opponent = None
             self.state_change = 1
             self.DJ.play_transition()
+            self.DJ.stop_Run()
 
     def game_update(self, surface):
         '''Updates the game according to its state'''
